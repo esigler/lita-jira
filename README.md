@@ -24,7 +24,8 @@ config.handlers.jira.context  = '' # If your instance is in a /subdirectory, put
 ## Usage
 
 ```
-Lita jira ABC-123         # Returns the issue summary
+Lita jira <issue ID>         # Shows summary for <issue ID>
+Lita jira <issue ID> details # Shows detailed information for <issue ID>
 ```
 
 ## License

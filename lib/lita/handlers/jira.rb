@@ -8,14 +8,14 @@ module Lita
         /^jira\s(\D*-\d*)$/,
         :issue_summary,
         command: true,
-        help: { 'jira ABC-123' => 'Display the summary for an issue ID' }
+        help: { 'jira <issue ID>' => 'Shows summary for <issue ID>' }
       )
 
       route(
         /^jira\s(\D*-\d*)\sdetails$/,
         :issue_details,
         command: true,
-        help: { 'jira ABC-123 details' => 'Display details for an issue ID' }
+        help: { 'jira <issue ID> details' => 'Shows detailed information for <issue ID>' }
       )
 
       def self.default_config(config)
