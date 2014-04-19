@@ -1,0 +1,17 @@
+ClassLength:
+  Max: 400
+
+CyclomaticComplexity:
+  Max: 10
+
+Documentation:
+  Enabled: false
+
+FileName:
+  Enabled: false
+
+LineLength:
+  Max: 130
+
+MethodLength:
+  Max: 30

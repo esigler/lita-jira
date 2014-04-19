@@ -42,10 +42,10 @@ todo <summary> - Creates an issue with your default priority and project setting
 jira issue assignee <issue ID>                 - Shows assignee of <issue ID>
 jira issue assignee <issue ID> <email address> - Sets <email address> as the assignee
 jira issue attachments <issue ID>              - Shows all attachments for <issue ID>
-jira issue attach <issue ID> <URL>             - Adds <URL> as an attachment on <issue ID>
+jira issue attachments <issue ID> <URL>        - Adds <URL> as an attachment on <issue ID>
 jira issue comments <issue ID>                 - Shows all comments for <issue ID>
-jira issue comment <issue ID> <text>           - Adds <text> as a comment on <issue ID>
-jira issue details <issue ID>                  - Shows all details for <issue ID>a
+jira issue comments <issue ID> <text>          - Adds <text> as a comment on <issue ID>
+jira issue details <issue ID>                  - Shows all details for <issue ID>
 jira issue issuetype <issue ID>                - Shows the Issue Type of <issue ID>
 jira issue issuetype <issue ID> <issuetype ID> - Sets the Issue Type of <issue ID> to <issuetype ID>
 jira issue new <project ID> <args>             - Creates a new issue in <project ID> with <args> (args is any name:"value" pair, such as summary:"Some text")
@@ -63,6 +63,13 @@ jira issue watchers <issue ID> <email address> - Adds <email address> to watcher
 
 ```
 jira issuetype list <project ID> - List all issuetypes for <project ID>
+```
+
+### Search
+
+```
+jira search "<text>"              - Search for <text> across all of JIRA
+jira search <project ID> "<text>" - Search for <text> within the scope of <project ID>
 ```
 
 ### Misc

@@ -2,3 +2,5 @@ en:
   lita:
     handlers:
       jira:
+        error:
+          not_implemented: Not implemented yet.
