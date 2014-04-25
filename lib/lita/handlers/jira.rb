@@ -275,6 +275,74 @@ module Lita
         response.reply(t('error.not_implemented'))
       end
 
+      def issue_assignee_list(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_assignee_set(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_attachments_list(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_attachments_set(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_comments_list(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_comments_add(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_issuetype_list(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_issuetype_set(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_new(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_notify_list(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_notify_set(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_priority_list(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_priority_set(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_summary_list(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_summary_set(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_watchers_list(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def issue_watchers_set(response)
+        response.reply(t('error.not_implemented'))
+      end
+
       def issuetype_list(response)
         response.reply(t('error.not_implemented'))
       end
@@ -284,6 +352,26 @@ module Lita
       end
 
       def search_project(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def identify(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def forget(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def whoami(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def default_project(response)
+        response.reply(t('error.not_implemented'))
+      end
+
+      def default_priority(response)
         response.reply(t('error.not_implemented'))
       end
 
@@ -298,25 +386,20 @@ module Lita
           fail 'Missing config'
         end
 
-        options = {
-          username:      Lita.config.handlers.jira.username,
-          password:      Lita.config.handlers.jira.password,
-          site:          Lita.config.handlers.jira.site,
-          context_path:  Lita.config.handlers.jira.context,
-          auth_type:     :basic
-        }
-
-        JIRA::Client.new(options)
+        JIRA::Client.new(
+          username: Lita.config.handlers.jira.username,
+          password: Lita.config.handlers.jira.password,
+          site: Lita.config.handlers.jira.site,
+          context_path: Lita.config.handlers.jira.context,
+          auth_type: :basic
+        )
       end
 
       def fetch_issue(key)
-        client = j_client
-        begin
-          client.Issue.find(key)
+        j_client.Issue.find(key)
         rescue JIRA::HTTPError
           Lita.logger.error('JIRA HTTPError')
           nil
-        end
       end
 
       def format_issue(issue)

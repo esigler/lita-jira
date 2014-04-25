@@ -88,4 +88,85 @@ describe Lita::Handlers::Jira, lita_handler: true do
       expect(replies.last).to eq('Error fetching JIRA issue')
     end
   end
+
+  describe '#todo' do
+  end
+
+  describe '#issue_assignee_list' do
+  end
+
+  describe '#issue_assignee_set' do
+  end
+
+  describe '#issue_attachments_list' do
+  end
+
+  describe '#issue_attachments_set' do
+  end
+
+  describe '#issue_comments_list' do
+  end
+
+  describe '#issue_comments_add' do
+  end
+
+  describe '#issue_details' do
+  end
+
+  describe '#issue_issuetype_list' do
+  end
+
+  describe '#issue_issuetype_set' do
+  end
+
+  describe '#issue_new' do
+  end
+
+  describe '#issue_notify_list' do
+  end
+
+  describe '#issue_notify_set' do
+  end
+
+  describe '#issue_priority_list' do
+  end
+
+  describe '#issue_priority_set' do
+  end
+
+  describe '#issue_summary_list' do
+  end
+
+  describe '#issue_summary_set' do
+  end
+
+  describe '#issue_watchers_list' do
+  end
+
+  describe '#issue_watchers_set' do
+  end
+
+  describe '#issuetype_list' do
+  end
+
+  describe '#search_full' do
+  end
+
+  describe '#search_project' do
+  end
+
+  describe '#identify' do
+  end
+
+  describe '#forget' do
+  end
+
+  describe '#whoami' do
+  end
+
+  describe '#default_project' do
+  end
+
+  describe '#default_priority' do
+  end
 end
