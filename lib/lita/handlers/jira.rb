@@ -6,8 +6,7 @@ module Lita
         :todo,
         command: true,
         help: {
-          'todo <summary>' =>
-          'Creates an issue with your default priority and project settings, assigned to yourself'
+          t('help.todo.syntax') => t('help.todo.desc')
         }
       )
 
@@ -16,7 +15,7 @@ module Lita
         :issue_assignee_list,
         command: true,
         help: {
-          'jira issue assignee <issue ID>' => 'Shows assignee of <issue ID>'
+          t('help.issue.assignee_list.syntax') => t('help.issue.assignee_list.desc')
         }
       )
 
@@ -25,7 +24,7 @@ module Lita
         :issue_assignee_set,
         command: true,
         help: {
-          'jira issue assignee <issue ID> <email address>' => 'Sets <email address> as the assignee'
+          t('help.issue.assignee_set.syntax') => t('help.issue.assignee_set.syntax')
         }
       )
 
@@ -34,7 +33,7 @@ module Lita
         :issue_attachments_list,
         command: true,
         help: {
-          'jira issue attachments <issue ID>' => 'Shows all attachments for <issue ID>'
+          t('help.issue.attachments_list.syntax') => t('help.issue.attachments_list.desc')
         }
       )
 
@@ -43,7 +42,7 @@ module Lita
         :issue_attachments_set,
         command: true,
         help: {
-          'jira issue attachments <issue ID> <URL>' => 'Adds <URL> as an attachment on <issue ID>'
+          t('help.issue.attachments_set.syntax') => t('help.issue.attachments_set.desc')
         }
       )
 
@@ -52,7 +51,7 @@ module Lita
         :issue_comments_list,
         command: true,
         help: {
-          'jira issue comments <issue ID>' => 'Shows all comments for <issue ID>'
+          t('help.issue.comments_list.syntax') => t('help.issue.comments_list.desc')
         }
       )
 
@@ -61,7 +60,7 @@ module Lita
         :issue_comments_add,
         command: true,
         help: {
-          'jira issue comments <issue ID> <text>' => 'Adds <text> as a comment on <issue ID>'
+          t('help.issue.comments_set.syntax') => t('help.issue.comments_set.desc')
         }
       )
 
@@ -70,7 +69,7 @@ module Lita
         :issue_details,
         command: true,
         help: {
-          'jira issue details <issue ID>' => 'Shows all details for <issue ID>'
+          t('help.issue.details.syntax') => t('help.issue.details.desc')
         }
       )
 
@@ -79,7 +78,7 @@ module Lita
         :issue_issuetype_list,
         command: true,
         help: {
-          'jira issue issuetype <issue ID>' => 'Shows the Issue Type of <issue ID>'
+          t('help.issue.issuetype_list.syntax') => t('help.issue.issuetype_list.desc')
         }
       )
 
@@ -88,7 +87,7 @@ module Lita
         :issue_issuetype_set,
         command: true,
         help: {
-          'jira issue issuetype <issue ID> <issuetype ID>' => 'Sets the Issue Type of <issue ID> to <issuetype ID>'
+          t('help.issue.issuetype_set.syntax') => t('help.issue.issuetype_set.desc')
         }
       )
 
@@ -228,26 +227,21 @@ module Lita
         }
       )
 
-      # route(
-      #   /^$/,
-      #   :,
-      #   help: {
-      #     t('help..syntax') => t('help..desc')
-      #   }
-      # )
-
       route(
         /^jira\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
         :issue_summary,
         command: true,
-        help: { 'jira <issue ID>' => 'Shows summary for <issue ID>' }
+        help: {
+          'jira <issue ID>' => 'Shows summary for <issue ID>'
+        }
       )
 
       route(
         /^jira\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\sdetails$/,
         :issue_details,
         command: true,
-        help: { 'jira <issue ID> details' => 'Shows detailed information for <issue ID>' }
+        help: {
+          'jira <issue ID> details' => 'Shows detailed information for <issue ID>' }
       )
 
       def self.default_config(config)
@@ -263,7 +257,7 @@ module Lita
         if issue
           response.reply("#{key}: #{issue.summary}")
         else
-          response.reply('Error fetching JIRA issue')
+          response.reply(t('error.request'))
         end
       end
 
@@ -271,12 +265,9 @@ module Lita
         key = response.matches[0][0]
         issue = fetch_issue(key)
         if issue
-          response.reply("#{key}: #{issue.summary}, " \
-                         "assigned to: #{issue.assignee.displayName}, " \
-                         "priority: #{issue.priority.name}, " \
-                         "status: #{issue.status.name}")
+          response.reply(format_issue(issue))
         else
-          response.reply('Error fetching JIRA issue')
+          response.reply(t('error.request'))
         end
       end
 
@@ -320,13 +311,21 @@ module Lita
 
       def fetch_issue(key)
         client = j_client
-        if client
-          begin
-            client.Issue.find(key)
-          rescue JIRA::HTTPError
-            nil
-          end
+        begin
+          client.Issue.find(key)
+        rescue JIRA::HTTPError
+          Lita.logger.error('JIRA HTTPError')
+          nil
         end
+      end
+
+      def format_issue(issue)
+        t('issue.details',
+          key: issue.key,
+          summary: issue.summary,
+          assigned: issue.assignee.displayName,
+          priority: issue.priority.name,
+          status: issue.status.name)
       end
     end
 

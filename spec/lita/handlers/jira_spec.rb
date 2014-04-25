@@ -69,7 +69,8 @@ describe Lita::Handlers::Jira, lita_handler: true do
       response = double(summary: 'Some summary text',
                         assignee: double(displayName: 'A Person'),
                         priority: double(name: 'P0'),
-                        status: double(name: 'In Progress'))
+                        status: double(name: 'In Progress'),
+                        key: 'XYZ-987')
       allow_any_instance_of(Lita::Handlers::Jira).to \
         receive(:fetch_issue).with('XYZ-987').and_return(response)
       send_command('jira XYZ-987 details')
