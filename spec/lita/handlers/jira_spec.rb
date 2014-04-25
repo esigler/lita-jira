@@ -93,60 +93,80 @@ describe Lita::Handlers::Jira, lita_handler: true do
   end
 
   describe '#issue_assignee_list' do
+    it 'with valid issue ID shows the current assignees'
+
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_assignee_set' do
+    it 'with valid issue ID sets an assignee'
+
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_attachments_list' do
+    it 'with valid issue ID shows the current attachments'
+
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_attachments_set' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_comments_list' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_comments_add' do
-  end
-
-  describe '#issue_details' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_issuetype_list' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_issuetype_set' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_new' do
   end
 
   describe '#issue_notify_list' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_notify_set' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_priority_list' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_priority_set' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_summary_list' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_summary_set' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_watchers_list' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issue_watchers_set' do
+    it 'without valid issue ID shows an error'
   end
 
   describe '#issuetype_list' do
+    it 'without valid issuetype shows an error'
   end
 
   describe '#search_full' do
