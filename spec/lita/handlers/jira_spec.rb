@@ -1,6 +1,19 @@
 require 'spec_helper'
 
 describe Lita::Handlers::Jira, lita_handler: true do
+  let(:open_issue) do
+    double(summary: 'Some summary text',
+           assignee: double(displayName: 'A Person'),
+           priority: double(name: 'P0'),
+           status: double(name: 'In Progress'),
+           key: 'XYZ-987')
+  end
+
+  def grab_issue_request(key, issue)
+    allow_any_instance_of(Lita::Handlers::Jira).to \
+      receive(:fetch_issue).with(key).and_return(issue)
+  end
+
   it { routes_command('todo some text').to(:todo) }
   it { routes_command('jira issue assignee ABC-123').to(:issue_assignee_list) }
   it { routes_command('jira issue assignee ABC-123 foo@example.com').to(:issue_assignee_set) }
@@ -49,16 +62,13 @@ describe Lita::Handlers::Jira, lita_handler: true do
 
   describe '#issue_summary' do
     it 'with valid issue ID shows summary' do
-      response = double(summary: 'Some summary text')
-      allow_any_instance_of(Lita::Handlers::Jira).to \
-        receive(:fetch_issue).with('XYZ-987').and_return(response)
+      grab_issue_request('XYZ-987', open_issue)
       send_command('jira XYZ-987')
       expect(replies.last).to eq('XYZ-987: Some summary text')
     end
 
     it 'without valid issue ID shows an error' do
-      allow_any_instance_of(Lita::Handlers::Jira).to \
-        receive(:fetch_issue).with('XYZ-987').and_return(nil)
+      grab_issue_request('XYZ-987', nil)
       send_command('jira XYZ-987')
       expect(replies.last).to eq('Error fetching JIRA issue')
     end
@@ -66,21 +76,14 @@ describe Lita::Handlers::Jira, lita_handler: true do
 
   describe '#issue_details' do
     it 'with valid issue ID shows details' do
-      response = double(summary: 'Some summary text',
-                        assignee: double(displayName: 'A Person'),
-                        priority: double(name: 'P0'),
-                        status: double(name: 'In Progress'),
-                        key: 'XYZ-987')
-      allow_any_instance_of(Lita::Handlers::Jira).to \
-        receive(:fetch_issue).with('XYZ-987').and_return(response)
+      grab_issue_request('XYZ-987', open_issue)
       send_command('jira XYZ-987 details')
       expect(replies.last).to eq('XYZ-987: Some summary text, assigned to: ' \
                                  'A Person, priority: P0, status: In Progress')
     end
 
     it 'without valid issue ID shows an error' do
-      allow_any_instance_of(Lita::Handlers::Jira).to \
-        receive(:fetch_issue).with('XYZ-987').and_return(nil)
+      grab_issue_request('XYZ-987', nil)
       send_command('jira XYZ-987 details')
       expect(replies.last).to eq('Error fetching JIRA issue')
     end
