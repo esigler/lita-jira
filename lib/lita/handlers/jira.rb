@@ -1,6 +1,9 @@
 module Lita
   module Handlers
     class Jira < Handler
+      PROJECT_PATTERN = "[a-zA-Z0-9]{1,10}"
+      ISSUE_PATTERN = "#{PROJECT_PATTERN}-[0-9]{1,5}"
+
       route(
         /^todo\s(.*)$/,
         :todo,
@@ -11,7 +14,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\sassignee\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\sissue\sassignee\s(#{ISSUE_PATTERN})$/,
         :issue_assignee_list,
         command: true,
         help: {
@@ -20,7 +23,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\sassignee\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\s(.+)$/,
+        /^jira\sissue\sassignee\s(#{ISSUE_PATTERN})\s(.+)$/,
         :issue_assignee_set,
         command: true,
         help: {
@@ -29,7 +32,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\sattachments\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\sissue\sattachments\s(#{ISSUE_PATTERN})$/,
         :issue_attachments_list,
         command: true,
         help: {
@@ -38,7 +41,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\sattachments\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\s(.+)$/,
+        /^jira\sissue\sattachments\s(#{ISSUE_PATTERN})\s(.+)$/,
         :issue_attachments_set,
         command: true,
         help: {
@@ -47,7 +50,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\scomments\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\sissue\scomments\s(#{ISSUE_PATTERN})$/,
         :issue_comments_list,
         command: true,
         help: {
@@ -56,7 +59,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\scomments\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\s(.+)$/,
+        /^jira\sissue\scomments\s(#{ISSUE_PATTERN})\s(.+)$/,
         :issue_comments_add,
         command: true,
         help: {
@@ -65,7 +68,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\sdetails\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\sissue\sdetails\s(#{ISSUE_PATTERN})$/,
         :issue_details,
         command: true,
         help: {
@@ -74,7 +77,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\sissuetype\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\sissue\sissuetype\s(#{ISSUE_PATTERN})$/,
         :issue_issuetype_list,
         command: true,
         help: {
@@ -83,7 +86,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\sissuetype\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\s(\d+)$/,
+        /^jira\sissue\sissuetype\s(#{ISSUE_PATTERN})\s(\d+)$/,
         :issue_issuetype_set,
         command: true,
         help: {
@@ -92,7 +95,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\snew\s([a-zA-Z0-9]{1,4})\s(.+)$/,
+        /^jira\sissue\snew\s(#{PROJECT_PATTERN})\s(.+)$/,
         :issue_new,
         help: {
           t('help.issue.new.syntax') => t('help.issue.new.desc')
@@ -100,7 +103,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\snotify\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\sissue\snotify\s(#{ISSUE_PATTERN})$/,
         :issue_notify_list,
         help: {
           t('help.issue.notify_list.syntax') => t('help.issue.notify_list.desc')
@@ -108,7 +111,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\snotify\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\s(.+)$/,
+        /^jira\sissue\snotify\s(#{ISSUE_PATTERN})\s(.+)$/,
         :issue_notify_set,
         help: {
           t('help.issue.notify_set.syntax') => t('help.issue.notify_set.desc')
@@ -116,7 +119,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\spriority\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\sissue\spriority\s(#{ISSUE_PATTERN})$/,
         :issue_priority_list,
         help: {
           t('help.issue.priority_list.syntax') => t('help.issue.priority_list.desc')
@@ -124,7 +127,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\spriority\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\s(\d+)$/,
+        /^jira\sissue\spriority\s(#{ISSUE_PATTERN})\s(\d+)$/,
         :issue_priority_set,
         help: {
           t('help.issue.priority_set.syntax') => t('help.issue.priority_set.desc')
@@ -132,7 +135,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\ssummary\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\sissue\ssummary\s(#{ISSUE_PATTERN})$/,
         :issue_summary_list,
         help: {
           t('help.issue.summary_list.syntax') => t('help.issue.summary_list.desc')
@@ -140,7 +143,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\ssummary\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\s(.+)$/,
+        /^jira\sissue\ssummary\s(#{ISSUE_PATTERN})\s(.+)$/,
         :issue_summary_set,
         help: {
           t('help.issue.summary_set.syntax') => t('help.issue.summary_set.desc')
@@ -148,7 +151,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\swatchers\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\sissue\swatchers\s(#{ISSUE_PATTERN})$/,
         :issue_watchers_list,
         help: {
           t('help.issue.watchers_list.syntax') => t('help.issue.watchers_list.desc')
@@ -156,7 +159,7 @@ module Lita
       )
 
       route(
-        /^jira\sissue\swatchers\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\s(.+)$/,
+        /^jira\sissue\swatchers\s(#{ISSUE_PATTERN})\s(.+)$/,
         :issue_watchers_set,
         help: {
           t('help.issue.watchers_set.syntax') => t('help.issue.watchers_set.desc')
@@ -164,7 +167,7 @@ module Lita
       )
 
       route(
-        /^jira\sissuetype\slist\s([a-zA-Z0-9]{1,4})$/,
+        /^jira\sissuetype\slist\s(#{PROJECT_PATTERN})$/,
         :issuetype_list,
         help: {
           t('help.issuetype.list.syntax') => t('help.issuetype.list.desc')
@@ -180,7 +183,7 @@ module Lita
       )
 
       route(
-        /^jira\ssearch\s([a-zA-Z0-9]{1,4})\s(.+)$/,
+        /^jira\ssearch\s(#{PROJECT_PATTERN})\s(.+)$/,
         :search_project,
         help: {
           t('help.search.project.syntax') => t('help.search.project.desc')
@@ -212,7 +215,7 @@ module Lita
       )
 
       route(
-        /^jira\sdefault\sproject\s([a-zA-Z0-9]{1,4})$/,
+        /^jira\sdefault\sproject\s(#{PROJECT_PATTERN})$/,
         :default_project,
         help: {
           t('help.default.project.syntax') => t('help.default.project.desc')
@@ -228,7 +231,7 @@ module Lita
       )
 
       route(
-        /^jira\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})$/,
+        /^jira\s(#{ISSUE_PATTERN})$/,
         :issue_summary,
         command: true,
         help: {
@@ -237,7 +240,7 @@ module Lita
       )
 
       route(
-        /^jira\s([a-zA-Z0-9]{1,4}-[0-9]{1,5})\sdetails$/,
+        /^jira\s(#{ISSUE_PATTERN})\sdetails$/,
         :issue_details,
         command: true,
         help: {
