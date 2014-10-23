@@ -1,5 +1,5 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem 'jira-ruby', :require => 'jira'
+gem 'jira-ruby', require: 'jira'
 
 gemspec
