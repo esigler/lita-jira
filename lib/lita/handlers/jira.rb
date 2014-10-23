@@ -1,7 +1,7 @@
 module Lita
   module Handlers
     class Jira < Handler
-      PROJECT_PATTERN = "[a-zA-Z0-9]{1,10}"
+      PROJECT_PATTERN = '[a-zA-Z0-9]{1,10}'
       ISSUE_PATTERN = "#{PROJECT_PATTERN}-[0-9]{1,5}"
 
       route(
