@@ -10,6 +10,9 @@ Documentation:
 FileName:
   Enabled: false
 
+AbcSize:
+  Enabled: false
+
 LineLength:
   Max: 130
 
