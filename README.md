@@ -7,7 +7,7 @@
 [![Code Climate](https://img.shields.io/codeclimate/github/esigler/lita-jira.svg)](https://codeclimate.com/github/esigler/lita-jira)
 [![Gemnasium](https://img.shields.io/gemnasium/esigler/lita-jira.svg)](https://gemnasium.com/esigler/lita-jira)
 
-JIRA (https://www.atlassian.com/software/jira) [handler](https://github.com/jimmycuadra/lita) for creating, updating issues.
+A [JIRA](https://www.atlassian.com/software/jira) plugin for [Lita](https://github.com/jimmycuadra/lita).
 
 ## Installation
 

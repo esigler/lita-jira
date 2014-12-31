@@ -1,20 +1,6 @@
-ClassLength:
-  Max: 400
-
-CyclomaticComplexity:
-  Max: 10
-
-Documentation:
-  Enabled: false
-
 FileName:
-  Enabled: false
-
-AbcSize:
-  Enabled: false
+  Exclude:
+    - lib/lita-jira.rb
 
 LineLength:
   Max: 130
-
-MethodLength:
-  Max: 30
