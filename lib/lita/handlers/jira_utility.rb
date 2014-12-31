@@ -12,7 +12,7 @@ module Lita
       include ::JiraHelper::Utility
 
       route(
-        /^jira\sidentify\s(?<email>.*)$/,
+        /^jira\sidentify\s#{EMAIL_PATTERN}$/,
         :identify,
         command: true,
         help: {
