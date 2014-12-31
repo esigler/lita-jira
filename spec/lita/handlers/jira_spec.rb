@@ -20,11 +20,11 @@ describe Lita::Handlers::Jira, lita_handler: true do
   end
 
   it do
-    # is_expected.to route_command('todo some text').to(:todo)
-    # is_expected.to route_command('jira issue assignee ABC-123').to(:issue_assignee_list)
+    is_expected.to route_command('jira ABC-123')
+    is_expected.to route_command('jira details ABC-123')
   end
 
-  describe '#issue_summary' do
+  describe '#summary' do
     it 'with valid issue ID shows summary' do
       grab_request(open_issue)
       send_command('jira XYZ-987')
@@ -38,17 +38,17 @@ describe Lita::Handlers::Jira, lita_handler: true do
     end
   end
 
-  describe '#issue_details' do
+  describe '#details' do
     it 'with valid issue ID shows details' do
       grab_request(open_issue)
-      send_command('jira XYZ-987 details')
+      send_command('jira details XYZ-987')
       expect(replies.last).to eq('XYZ-987: Some summary text, assigned to: ' \
                                  'A Person, priority: P0, status: In Progress')
     end
 
     it 'without valid issue ID shows an error' do
       grab_request(failed_find)
-      send_command('jira XYZ-987 details')
+      send_command('jira details XYZ-987')
       expect(replies.last).to eq('Error fetching JIRA issue')
     end
   end

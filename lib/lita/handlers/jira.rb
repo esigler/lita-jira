@@ -16,8 +16,8 @@ module Lita
       include ::JiraHelper::Regex
 
       route(
-        /^jira\s(#{ISSUE_PATTERN})$/,
-        :issue_summary,
+        /^jira\s#{ISSUE_PATTERN}$/,
+        :summary,
         command: true,
         help: {
           'jira <issue ID>' => 'Shows summary for <issue ID>'
@@ -25,31 +25,25 @@ module Lita
       )
 
       route(
-        /^jira\s(#{ISSUE_PATTERN})\sdetails$/,
-        :issue_details,
+        /^jira\sdetails\s#{ISSUE_PATTERN}$/,
+        :details,
         command: true,
         help: {
           'jira <issue ID> details' => 'Shows detailed information for <issue ID>' }
       )
 
-      def issue_summary(response)
-        key = response.matches[0][0]
+      def summary(response)
+        key = response.match_data['issue']
         issue = fetch_issue(key)
-        if issue
-          response.reply("#{key}: #{issue.summary}")
-        else
-          response.reply(t('error.request'))
-        end
+        return response.reply(t('error.request')) unless issue
+        response.reply("#{key}: #{issue.summary}")
       end
 
-      def issue_details(response)
-        key = response.matches[0][0]
+      def details(response)
+        key = response.match_data['issue']
         issue = fetch_issue(key)
-        if issue
-          response.reply(format_issue(issue))
-        else
-          response.reply(t('error.request'))
-        end
+        return response.reply(t('error.request')) unless issue
+        response.reply(format_issue(issue))
       end
     end
 
