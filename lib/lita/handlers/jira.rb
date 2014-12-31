@@ -20,7 +20,7 @@ module Lita
         :summary,
         command: true,
         help: {
-          'jira <issue ID>' => 'Shows summary for <issue ID>'
+          t('help.summary.syntax') => t('help.summary.desc')
         }
       )
 
@@ -29,21 +29,37 @@ module Lita
         :details,
         command: true,
         help: {
-          'jira <issue ID> details' => 'Shows detailed information for <issue ID>' }
+          t('help.details.syntax') => t('help.details.desc')
+        }
+      )
+
+      route(
+        /^jira\scomment\son\s#{ISSUE_PATTERN}\s"(?<comment>.+)"$/,
+        :comment,
+        command: true,
+        help: {
+          t('help.comment.syntax') => t('help.comment.desc')
+        }
       )
 
       def summary(response)
-        key = response.match_data['issue']
-        issue = fetch_issue(key)
+        issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
-        response.reply("#{key}: #{issue.summary}")
+        response.reply("#{issue.key}: #{issue.summary}")
       end
 
       def details(response)
-        key = response.match_data['issue']
-        issue = fetch_issue(key)
+        issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
         response.reply(format_issue(issue))
+      end
+
+      def comment(response)
+        issue = fetch_issue(response.match_data['issue'])
+        return response.reply(t('error.request')) unless issue
+        comment = issue.comments.build
+        comment.save!(body: response.match_data['comment'])
+        response.reply(t('comment.added', issue: issue.key))
       end
     end
 

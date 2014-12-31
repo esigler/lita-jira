@@ -16,9 +16,20 @@ en:
           whoami:
             syntax: jira whoami
             desc: Show your chat user / email association
+          comment:
+            syntax:
+            desc:
+          details:
+            syntax: jira details <issue>
+            desc: Shows detailed information for <issue>
+          summary:
+            syntax: jira <issue>
+            desc: Shows summary for <issue>
         identify:
           stored: "You have been identified as %{email} to JIRA"
           deleted: You have been de-identified from JIRA
           email: "You are identified with JIRA as %{email}"
         issue:
           details: "%{key}: %{summary}, assigned to: %{assigned}, priority: %{priority}, status: %{status}"
+        comment:
+          added: "Comment added to %{issue}"
