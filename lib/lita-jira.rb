@@ -9,5 +9,7 @@ require 'jira'
 require 'jirahelper/issue'
 require 'jirahelper/misc'
 require 'jirahelper/regex'
+require 'jirahelper/utility'
 
+require 'lita/handlers/jira_utility'
 require 'lita/handlers/jira'

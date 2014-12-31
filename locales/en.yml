@@ -3,39 +3,22 @@ en:
     handlers:
       jira:
         error:
-          not_implemented: Not implemented yet.
+          already_identified: "You are already identified as %{email}"
+          not_identified: You do not have an email address on record
           request: Error fetching JIRA issue
         help:
-          todo:
-            syntax: todo <summary>
-            desc: Creates an issue with your default priority and project settings, assigned to yourself
-          issue:
-            assignee_list:
-              syntax: jira issue assignee <issue ID>
-              desc: Shows assignee of <issue ID>
-            assignee_set:
-              syntax: jira issue assignee <issue ID> <email address>
-              desc: Sets <email address> as the assignee
-            attachments_list:
-              syntax: jira issue attachments <issue ID>
-              desc: Shows all attachments for <issue ID>
-            attachments_set:
-              syntax: jira issue attachments <issue ID> <URL>
-              desc: Adds <URL> as an attachment on <issue ID>
-            comments_list:
-              syntax: jira issue comments <issue ID>
-              desc: Shows all comments for <issue ID>
-            comments_set:
-              syntax: jira issue comments <issue ID> <text>
-              desc: Adds <text> as a comment on <issue ID>
-            details:
-              syntax: jira issue details <issue ID>
-              desc: Shows all details for <issue ID>
-            issuetype_list:
-              syntax: jira issue issuetype <issue ID>
-              desc: Shows the Issue Type of <issue ID>
-            issuetype_set:
-              syntax: jira issue issuetype <issue ID> <issuetype ID>
-              desc: Sets the Issue Type of <issue ID> to <issuetype ID>
+          identify:
+            syntax: jira identify <email address>
+            desc: Associate your chat user with your email address
+          forget:
+            syntax: jira forget
+            desc: Remove your chat user / email association
+          whoami:
+            syntax: jira whoami
+            desc: Show your chat user / email association
+        identify:
+          stored: "You have been identified as %{email} to JIRA"
+          deleted: You have been de-identified from JIRA
+          email: "You are identified with JIRA as %{email}"
         issue:
           details: "%{key}: %{summary}, assigned to: %{assigned}, priority: %{priority}, status: %{status}"
