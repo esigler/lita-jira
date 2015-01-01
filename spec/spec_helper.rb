@@ -19,5 +19,5 @@ RSpec.configure do |config|
 end
 
 def grab_request(result)
-  expect(JIRA::Client).to receive(:new) { result }
+  allow(JIRA::Client).to receive(:new) { result }
 end

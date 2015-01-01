@@ -34,7 +34,7 @@ module Lita
       )
 
       route(
-        /^jira\scomment\son\s#{ISSUE_PATTERN}\s"(?<comment>.+)"$/,
+        /^jira\scomment\son\s#{ISSUE_PATTERN}\s#{COMMENT_PATTERN}$/,
         :comment,
         command: true,
         help: {
@@ -42,10 +42,19 @@ module Lita
         }
       )
 
+      route(
+        /^todo\s#{PROJECT_PATTERN}\s#{SUBJECT_PATTERN}(\s#{SUMMARY_PATTERN})?$/,
+        :todo,
+        command: true,
+        help: {
+          t('help.todo.syntax') => t('help.todo.desc')
+        }
+      )
+
       def summary(response)
         issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
-        response.reply("#{issue.key}: #{issue.summary}")
+        response.reply(t('issue.summary', key: issue.key, summary: issue.summary))
       end
 
       def details(response)
@@ -60,6 +69,14 @@ module Lita
         comment = issue.comments.build
         comment.save!(body: response.match_data['comment'])
         response.reply(t('comment.added', issue: issue.key))
+      end
+
+      def todo(response)
+        issue = create_issue(response.match_data['project'],
+                             response.match_data['subject'],
+                             response.match_data['summary'])
+        return response.reply(t('error.request')) unless issue
+        response.reply(t('issue.created', key: issue.key))
       end
     end
 

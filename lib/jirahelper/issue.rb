@@ -9,6 +9,13 @@ module JiraHelper
         nil
     end
 
+    def fetch_project(key)
+      client.Project.find(key)
+      rescue
+        log.error('JIRA HTTPError')
+        nil
+    end
+
     def format_issue(issue)
       t('issue.details',
         key: issue.key,
@@ -16,6 +23,17 @@ module JiraHelper
         assigned: issue.assignee.displayName,
         priority: issue.priority.name,
         status: issue.status.name)
+    end
+
+    def create_issue(project, subject, summary)
+      project = fetch_project(project)
+      return nil unless project
+      issue = client.Issue.build
+      issue.save(fields: { subject: subject,
+                           summary: summary,
+                           project: { id: project.id } })
+      issue.fetch
+      issue
     end
   end
 end

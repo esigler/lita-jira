@@ -34,6 +34,9 @@ config.handlers.jira.context  = '' # If your instance is in a /subdirectory, put
 
 ```
 todo <project> "<subject>" ["<summary>"] - Creates an issue in <project> with <subject> and optionally <summary>
+```
+
+```
 jira <issue>                             - Shows a short summary <issue>
 jira details <issue>                     - Shows all details about <issue>
 jira assign <user> to <issue>            - Assigns <user> to <issue>, <user> can be a 'Full Name' or a '@mentionname'
@@ -43,16 +46,16 @@ jira comment on <issue> <comment text>   - Adds <comment text> to <issue>
 ### Search
 
 ```
-jira search "<text>"              - Search for <text> across all of JIRA
-jira search <project ID> "<text>" - Search for <text> within the scope of <project ID>
+jira search "<text>"           - Search for <text> across all of JIRA
+jira search <project> "<text>" - Search for <text> within the scope of <project ID>
 ```
 
 ### Misc
 
 ```
-jira identify <email address>     - Associate your chat user with your email address
-jira forget                       - Remove your chat user / email association
-jira whoami                       - Show your chat user / email association
+jira identify <email address> - Associate your chat user with your email address
+jira forget                   - Remove your chat user / email association
+jira whoami                   - Show your chat user / email association
 ```
 
 ## License

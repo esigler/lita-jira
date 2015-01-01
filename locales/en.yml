@@ -17,19 +17,24 @@ en:
             syntax: jira whoami
             desc: Show your chat user / email association
           comment:
-            syntax:
-            desc:
+            syntax: jira comment on <issue> <comment text>
+            desc: Adds <comment text> to <issue>
           details:
             syntax: jira details <issue>
             desc: Shows detailed information for <issue>
           summary:
             syntax: jira <issue>
             desc: Shows summary for <issue>
+          todo:
+            syntax: todo <project> "<subject>" ["<summary>"]
+            desc: Creates an issue in <project> with <subject> and optionally <summary>
         identify:
           stored: "You have been identified as %{email} to JIRA"
           deleted: You have been de-identified from JIRA
           email: "You are identified with JIRA as %{email}"
         issue:
+          created: "Issue %{key} created"
           details: "%{key}: %{summary}, assigned to: %{assigned}, priority: %{priority}, status: %{status}"
+          summary: "%{key}: %{summary}"
         comment:
           added: "Comment added to %{issue}"
