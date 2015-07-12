@@ -20,8 +20,8 @@ module JiraHelper
       t('issue.details',
         key: issue.key,
         summary: issue.summary,
-        assigned: issue.assignee.displayName,
-        priority: issue.priority.name,
+        assigned: optional_issue_property('unassigned') { issue.assignee.displayName },
+        priority: optional_issue_property('none') { issue.priority.name },
         status: issue.status.name)
     end
 
@@ -34,6 +34,18 @@ module JiraHelper
                            project: { id: project.id } })
       issue.fetch
       issue
+    end
+
+    # Attempt to retrieve optional JIRA issue property value via a provided block.
+    # JIRA properties such as assignee and priority may not exist.
+    # In that case, the fallback will be used.
+    #
+    # @param [Type String] fallback A String value to use if the JIRA property value doesn't exist
+    # @return [Type] fallback or returned value from yield block
+    def optional_issue_property(fallback = '')
+      yield
+    rescue
+      fallback
     end
   end
 end
