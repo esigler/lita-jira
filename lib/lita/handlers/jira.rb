@@ -10,6 +10,7 @@ module Lita
       config :password, required: true
       config :site, required: true
       config :context, required: true
+      config :issue_pattern
 
       include ::JiraHelper::Issue
       include ::JiraHelper::Misc
@@ -78,6 +79,13 @@ module Lita
         return response.reply(t('error.request')) unless issue
         response.reply(t('issue.created', key: issue.key))
       end
+
+      Lita.register_hook(:before_run, -> (payload) do
+        ConfigurationBuilder.load_user_config(payload[:config_path])
+        if issue_pattern = Lita.config.handlers.jira.issue_pattern
+          route Regexp.new("(?<issue>#{issue_pattern})"), :summary
+        end
+      end)
     end
 
     Lita.register_handler(Jira)

@@ -26,6 +26,7 @@ config.handlers.jira.username = 'your_jira_username'
 config.handlers.jira.password = 'a_password'
 config.handlers.jira.site     = 'https://your.jira.instance.example.com/'
 config.handlers.jira.context  = '' # If your instance is in a /subdirectory, put that here
+config.handlers.jira.issue_pattern = 'FOO-\d+' # (optional) it will make lita comment each time an issue is mentioned
 ```
 
 ## Usage
