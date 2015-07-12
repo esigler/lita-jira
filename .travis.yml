@@ -1,8 +1,7 @@
 language: ruby
 rvm:
   - 2.1
-script: bundle exec rake
-before_install:
-  - gem update --system
 services:
   - redis-server
+sudo: false
+cache: bundler
