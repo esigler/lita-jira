@@ -28,6 +28,9 @@ en:
           todo:
             syntax: todo <project> "<subject>" ["<summary>"]
             desc: Creates an issue in <project> with <subject> and optionally <summary>
+          myissues:
+            syntax: jira myissues
+            desc: If identified, will display a list of issues currently assigned to you
         identify:
           stored: "You have been identified as %{email} to JIRA"
           deleted: You have been de-identified from JIRA
@@ -38,3 +41,6 @@ en:
           summary: "%{key}: %{summary}"
         comment:
           added: "Comment added to %{issue}"
+        myissues:
+          empty: "You do not have any assigned issues. Great job!"
+          info: "Here are issues currently assigned to you:"
