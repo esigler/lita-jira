@@ -51,6 +51,10 @@ jira forget                   - Remove your chat user / email association
 jira whoami                   - Show your chat user / email association
 ```
 
+## CHANGELOG
+
+[CHANGELOG](https://github.com/esigler/lita-jira/releases)
+
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
