@@ -12,6 +12,17 @@ describe Lita::Handlers::Jira, lita_handler: true do
     result
   end
 
+  let(:saved_issue_with_fewer_details) do
+    result = double(summary: 'Some summary text',
+                    status: double(name: 'In Progress'),
+                    key: 'XYZ-987')
+    allow(result).to receive('assignee').and_raise
+    allow(result).to receive('priority').and_raise
+    allow(result).to receive('save') { true }
+    allow(result).to receive('fetch') { true }
+    result
+  end
+
   let(:valid_search_results) do
     result = [double(summary: 'Some summary text',
                      assignee: double(displayName: 'A Person'),
@@ -40,6 +51,12 @@ describe Lita::Handlers::Jira, lita_handler: true do
     allow(issue).to receive_message_chain('Issue.build') { saved_issue }
     allow(issue).to receive_message_chain('Project.find') { saved_project }
     allow(issue).to receive_message_chain('Issue.jql') { valid_search_results }
+    issue
+  end
+
+  let(:client_with_fewer_details) do
+    issue = double
+    allow(issue).to receive_message_chain('Issue.find') { saved_issue_with_fewer_details }
     issue
   end
 
@@ -96,6 +113,13 @@ describe Lita::Handlers::Jira, lita_handler: true do
       send_command('jira details XYZ-987')
       expect(replies.last).to eq('XYZ-987: Some summary text, assigned to: ' \
                                  'A Person, priority: P0, status: In Progress')
+    end
+
+    it 'shows fewer details when the property is not set' do
+      grab_request(client_with_fewer_details)
+      send_command('jira details XYZ-987')
+      expect(replies.last).to eq('XYZ-987: Some summary text, assigned to: ' \
+                                 'unassigned, priority: none, status: In Progress')
     end
 
     it 'warns the user when the issue is not valid' do
