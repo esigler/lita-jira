@@ -49,6 +49,12 @@ describe Lita::Handlers::Jira, lita_handler: true do
     r
   end
 
+  let(:failed_find_issues) do
+    r = double
+    expect(r).to receive_message_chain('Issue.jql').and_throw(JIRA::HTTPError)
+    r
+  end
+
   let(:failed_find_project) do
     r = double
     expect(r).to receive_message_chain('Project.find').and_throw(JIRA::HTTPError)
@@ -138,17 +144,25 @@ describe Lita::Handlers::Jira, lita_handler: true do
 
     context 'when identified' do
       before { send_command('jira identify user@example.com') }
+
       it 'shows default response when no results are returned' do
         grab_request(empty_search_result)
         send_command('jira myissues')
         expect(replies.last).to eq('You do not have any assigned issues. Great job!')
       end
+
       it 'shows results when returned' do
         grab_request(valid_client)
         send_command('jira myissues')
         expect(replies.last).to eq(['Here are issues currently assigned to you:',
                                     'XYZ-987: Some summary text, assigned to: A Person, priority: P0, status: In Progress',
                                     'XYZ-988: Some summary text 2, assigned to: A Person 2, priority: P1, status: In Progress 2'])
+      end
+
+      it 'shows an error when the search fails' do
+        grab_request(failed_find_issues)
+        send_command('jira myissues')
+        expect(replies.last).to eq('Error fetching JIRA issue')
       end
     end
   end

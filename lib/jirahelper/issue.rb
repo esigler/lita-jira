@@ -15,9 +15,6 @@ module JiraHelper
     # @return [Type Array] 0-m JIRA Issues returned from query
     def fetch_issues(jql)
       client.Issue.jql(jql)
-    rescue
-      log.error('JIRA HTTPError')
-      []
     end
 
     def fetch_project(key)

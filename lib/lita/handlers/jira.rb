@@ -89,15 +89,23 @@ module Lita
         response.reply(t('issue.created', key: issue.key))
       end
 
+      # rubocop:disable Metrics/AbcSize
       def myissues(response)
         return response.reply(t('error.not_identified')) unless user_stored?(response.user)
 
-        myissues_jql = "assignee = '#{get_email(response.user)}' AND status not in (Closed)"
-        issues = fetch_issues(myissues_jql)
+        begin
+          issues = fetch_issues("assignee = '#{get_email(response.user)}' AND status not in (Closed)")
+        rescue
+          log.error('JIRA HTTPError')
+          response.reply(t('error.request'))
+          return
+        end
+
         return response.reply(t('myissues.empty')) unless issues.size > 0
 
         response.reply(format_issues(issues))
       end
+      # rubocop:enable Metrics/AbcSize
     end
 
     Lita.register_handler(Jira)
