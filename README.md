@@ -40,6 +40,7 @@ todo <project> "<subject>" ["<summary>"] - Creates an issue in <project> with <s
 jira <issue>                             - Shows a short summary <issue>
 jira details <issue>                     - Shows all details about <issue>
 jira comment on <issue> <comment text>   - Adds <comment text> to <issue>
+jira myissues                            - Displays a list of issues assigned to identified user
 ```
 
 ### Misc

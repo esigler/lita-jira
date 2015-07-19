@@ -9,6 +9,17 @@ module JiraHelper
         nil
     end
 
+    # Leverage the jira-ruby Issue.jql search feature
+    #
+    # @param [Type String] jql Valid JQL query
+    # @return [Type Array] 0-m JIRA Issues returned from query
+    def fetch_issues(jql)
+      client.Issue.jql(jql)
+    rescue
+      log.error('JIRA HTTPError')
+      []
+    end
+
     def fetch_project(key)
       client.Project.find(key)
       rescue
@@ -23,6 +34,15 @@ module JiraHelper
         assigned: optional_issue_property('unassigned') { issue.assignee.displayName },
         priority: optional_issue_property('none') { issue.priority.name },
         status: issue.status.name)
+    end
+
+    # Enumerate issues returned from JQL query and format for response
+    #
+    # @param [Type Array] issues 1-m issues returned from JQL query
+    # @return [Type Array<String>] formatted issues for display to user
+    def format_issues(issues)
+      results = [t('myissues.info')]
+      results.concat(issues.map { |issue| format_issue(issue) })
     end
 
     def create_issue(project, subject, summary)
@@ -41,7 +61,7 @@ module JiraHelper
     # In that case, the fallback will be used.
     #
     # @param [Type String] fallback A String value to use if the JIRA property value doesn't exist
-    # @return [Type] fallback or returned value from yield block
+    # @return [Type String] fallback or returned value from yield block
     def optional_issue_property(fallback = '')
       yield
     rescue

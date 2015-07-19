@@ -12,6 +12,22 @@ describe Lita::Handlers::Jira, lita_handler: true do
     result
   end
 
+  let(:valid_search_results) do
+    result = [double(summary: 'Some summary text',
+                     assignee: double(displayName: 'A Person'),
+                     priority: double(name: 'P0'),
+                     status: double(name: 'In Progress'),
+                     key: 'XYZ-987'),
+              double(summary: 'Some summary text 2',
+                     assignee: double(displayName: 'A Person 2'),
+                     priority: double(name: 'P1'),
+                     status: double(name: 'In Progress 2'),
+                     key: 'XYZ-988')]
+    allow(result).to receive('save') { true }
+    allow(result).to receive('fetch') { true }
+    result
+  end
+
   let(:saved_project) do
     double(key: 'XYZ',
            id: 1)
@@ -23,6 +39,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
     allow(issue).to receive_message_chain('Issue.find.comments.build.save!') { saved_issue }
     allow(issue).to receive_message_chain('Issue.build') { saved_issue }
     allow(issue).to receive_message_chain('Project.find') { saved_project }
+    allow(issue).to receive_message_chain('Issue.jql') { valid_search_results }
     issue
   end
 
@@ -38,12 +55,19 @@ describe Lita::Handlers::Jira, lita_handler: true do
     r
   end
 
+  let(:empty_search_result) do
+    r = double
+    expect(r).to receive_message_chain('Issue.jql') { [] }
+    r
+  end
+
   it do
     is_expected.to route_command('jira ABC-123').to(:summary)
     is_expected.to route_command('jira details ABC-123').to(:details)
     is_expected.to route_command('jira comment on ABC-123 "You just need a cat"').to(:comment)
     is_expected.to route_command('todo ABC "summary text"').to(:todo)
     is_expected.to route_command('todo ABC "summary text" "subject text"').to(:todo)
+    is_expected.to route_command('jira myissues').to(:myissues)
   end
 
   describe '#summary' do
@@ -100,6 +124,32 @@ describe Lita::Handlers::Jira, lita_handler: true do
       grab_request(failed_find_project)
       send_command('todo ABC "Some summary text"')
       expect(replies.last).to eq('Error fetching JIRA issue')
+    end
+  end
+
+  describe '#myissues' do
+    before { send_command('jira forget') }
+    context 'when not identified' do
+      it 'fails when user is not identified' do
+        send_command('jira myissues')
+        expect(replies.last).to eq('You do not have an email address on record')
+      end
+    end
+
+    context 'when identified' do
+      before { send_command('jira identify user@example.com') }
+      it 'shows default response when no results are returned' do
+        grab_request(empty_search_result)
+        send_command('jira myissues')
+        expect(replies.last).to eq('You do not have any assigned issues. Great job!')
+      end
+      it 'shows results when returned' do
+        grab_request(valid_client)
+        send_command('jira myissues')
+        expect(replies.last).to eq(['Here are issues currently assigned to you:',
+                                    'XYZ-987: Some summary text, assigned to: A Person, priority: P0, status: In Progress',
+                                    'XYZ-988: Some summary text 2, assigned to: A Person 2, priority: P1, status: In Progress 2'])
+      end
     end
   end
 end

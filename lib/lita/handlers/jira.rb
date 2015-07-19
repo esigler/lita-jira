@@ -14,6 +14,7 @@ module Lita
       include ::JiraHelper::Issue
       include ::JiraHelper::Misc
       include ::JiraHelper::Regex
+      include ::JiraHelper::Utility
 
       route(
         /^jira\s#{ISSUE_PATTERN}$/,
@@ -30,6 +31,15 @@ module Lita
         command: true,
         help: {
           t('help.details.syntax') => t('help.details.desc')
+        }
+      )
+
+      route(
+        /^jira\smyissues$/,
+        :myissues,
+        command: true,
+        help: {
+          t('help.myissues.syntax') => t('help.myissues.desc')
         }
       )
 
@@ -77,6 +87,16 @@ module Lita
                              response.match_data['summary'])
         return response.reply(t('error.request')) unless issue
         response.reply(t('issue.created', key: issue.key))
+      end
+
+      def myissues(response)
+        return response.reply(t('error.not_identified')) unless user_stored?(response.user)
+
+        myissues_jql = "assignee = '#{get_email(response.user)}' AND status not in (Closed)"
+        issues = fetch_issues(myissues_jql)
+        return response.reply(t('myissues.empty')) unless issues.size > 0
+
+        response.reply(format_issues(issues))
       end
     end
 
