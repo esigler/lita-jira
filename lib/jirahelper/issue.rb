@@ -32,7 +32,7 @@ module JiraHelper
         assigned: optional_issue_property('unassigned') { issue.assignee.displayName },
         fixVersion: optional_issue_property('none') do
           v = issue.fixVersions
-          raise if v.empty?
+          raise if v == []
           v
         end,
         priority: optional_issue_property('none') { issue.priority.name },
