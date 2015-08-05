@@ -6,11 +6,12 @@ module Lita
     class Jira < Handler
       namespace 'Jira'
 
-      config :username, required: true
-      config :password, required: true
-      config :site, required: true
-      config :context, required: true
-      config :ambient, types: [TrueClass, FalseClass], default: false
+      config :username, required: true, type: String
+      config :password, required: true, type: String
+      config :site, required: true, type: String
+      config :context, required: false, type: String, default: ''
+      config :ambient, required: false, types: [TrueClass, FalseClass], default: false
+      config :format, required: false, type: String, default: 'verbose'
 
       include ::JiraHelper::Issue
       include ::JiraHelper::Misc
@@ -113,7 +114,7 @@ module Lita
       def ambient(response)
         if config.ambient && !response.message.command?
           issue = fetch_issue(response.match_data['issue'], expected=false)
-          response.reply(t('issue.summary', key: issue.key, summary: issue.summary)) if issue
+          response.reply(format_issue(issue)) if issue
         end
       end
       # rubocop:enable Metrics/AbcSize
