@@ -25,12 +25,18 @@ module JiraHelper
     end
 
     def format_issue(issue)
-      t('issue.details',
+      t(config.format == 'one-line' ? 'issue.oneline' : 'issue.details',
         key: issue.key,
         summary: issue.summary,
+        status: issue.status.name,
         assigned: optional_issue_property('unassigned') { issue.assignee.displayName },
+        fixVersion: optional_issue_property('none') do
+          v = issue.fixVersions
+          raise if v.empty?
+          v
+        end,
         priority: optional_issue_property('none') { issue.priority.name },
-        status: issue.status.name)
+        url: format_issue_link(issue.key))
     end
 
     # Enumerate issues returned from JQL query and format for response
@@ -40,6 +46,10 @@ module JiraHelper
     def format_issues(issues)
       results = [t('myissues.info')]
       results.concat(issues.map { |issue| format_issue(issue) })
+    end
+
+    def format_issue_link(key)
+      "#{config.site}/browse/#{key}"
     end
 
     def create_issue(project, subject, summary)
