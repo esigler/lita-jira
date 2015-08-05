@@ -28,6 +28,12 @@ config.handlers.jira.site     = 'https://your.jira.instance.example.com/'
 config.handlers.jira.context  = '' # If your instance is in a /subdirectory, put that here
 ```
 
+### Optional attributes
+* `ambient` (boolean) - When set to `true`, Lita will show JIRA issue details when a JIRA issue key is mentioned in chat, outside the context of a command. Default: `false`
+```
+config.handlers.jira.ambient = true
+```
+
 ## Usage
 
 ### Shortcuts
