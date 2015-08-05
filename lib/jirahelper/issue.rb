@@ -2,10 +2,10 @@
 module JiraHelper
   # Issues
   module Issue
-    def fetch_issue(key)
+    def fetch_issue(key, expected=true)
       client.Issue.find(key)
       rescue
-        log.error('JIRA HTTPError')
+        log.error('JIRA HTTPError') if expected
         nil
     end
 
