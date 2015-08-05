@@ -10,6 +10,7 @@ module Lita
       config :password, required: true
       config :site, required: true
       config :context, required: true
+      config :ambient, types: [TrueClass, FalseClass], default: false
 
       include ::JiraHelper::Issue
       include ::JiraHelper::Misc
@@ -61,6 +62,9 @@ module Lita
         }
       )
 
+      # Detect ambient JIRA issues in non-command messages
+      route ISSUE_PATTERN, :ambient, command: false
+
       def summary(response)
         issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
@@ -105,9 +109,15 @@ module Lita
 
         response.reply(format_issues(issues))
       end
+
+      def ambient(response)
+        if config.ambient && !response.message.command?
+          issue = fetch_issue(response.match_data['issue'], expected=false)
+          response.reply(t('issue.summary', key: issue.key, summary: issue.summary)) if issue
+        end
+      end
       # rubocop:enable Metrics/AbcSize
     end
-
     Lita.register_handler(Jira)
   end
 end
