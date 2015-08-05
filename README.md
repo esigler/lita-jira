@@ -21,7 +21,7 @@ gem "lita-jira"
 
 Add the following variables to your lita config file:
 
-```
+``` ruby
 config.handlers.jira.username = 'your_jira_username'
 config.handlers.jira.password = 'a_password'
 config.handlers.jira.site     = 'https://your.jira.instance.example.com/'
@@ -31,10 +31,15 @@ config.handlers.jira.site     = 'https://your.jira.instance.example.com/'
 * `context` (string) - If your instance is in a /subdirectory, put that here. Default: `''`
 * `ambient` (boolean) - When set to `true`, Lita will show JIRA issue details when a JIRA issue key is mentioned in chat, outside the context of a command. Default: `false`
 * `format` (string) - You can select a compact one line issue summary by setting this parameter to `one-line`. Default: `verbose`
-```
+* `ignore` (array) - Prevent JIRA issue lookups from certain users with this parameter. Default: `[]`
+* `rooms` (array) - Specify a list of rooms to which responses to detected ambient JIRA issues should be limited. By default, the bot will respond to all rooms.
+
+``` ruby
 config.handlers.jira.context = '/myjira'
 config.handlers.jira.ambient = true
 config.handlers.jira.format = 'one-line'
+config.handlers.jira.ignore = ['Jira', 'Github']
+config.handlers.jira.rooms = ['devtools', 'engineering']
 ```
 
 ## Usage
