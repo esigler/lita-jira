@@ -49,7 +49,7 @@ module JiraHelper
     end
 
     def format_issue_link(key)
-      "#{config.site}/browse/#{key}"
+      "#{config.site}#{config.context}/browse/#{key}"
     end
 
     def create_issue(project, subject, summary)
