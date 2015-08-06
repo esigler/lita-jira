@@ -3,4 +3,4 @@ FileName:
     - lib/lita-jira.rb
 
 LineLength:
-  Max: 130
+  Max: 190
