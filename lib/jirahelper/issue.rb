@@ -2,12 +2,15 @@
 module JiraHelper
   # Issues
   module Issue
+    # NOTE: Prefer this syntax here as it's cleaner
+    # rubocop:disable Style/RescueEnsureAlignment
     def fetch_issue(key, expected = true)
       client.Issue.find(key)
-    rescue
-      log.error('JIRA HTTPError') if expected
-      nil
+      rescue
+        log.error('JIRA HTTPError') if expected
+        nil
     end
+    # rubocop:enable Style/RescueEnsureAlignment
 
     # Leverage the jira-ruby Issue.jql search feature
     #
@@ -17,12 +20,15 @@ module JiraHelper
       client.Issue.jql(jql)
     end
 
+    # NOTE: Prefer this syntax here as it's cleaner
+    # rubocop:disable Style/RescueEnsureAlignment
     def fetch_project(key)
       client.Project.find(key)
-    rescue
-      log.error('JIRA HTTPError')
-      nil
+      rescue
+        log.error('JIRA HTTPError')
+        nil
     end
+    # rubocop:enable Style/RescueEnsureAlignment
 
     # NOTE: Not breaking this function out just yet.
     # rubocop:disable Metrics/AbcSize
