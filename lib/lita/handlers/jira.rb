@@ -116,10 +116,11 @@ module Lita
       def ambient(response)
         return if config.ignore.include?(response.user.name)
         return if config.rooms && !config.rooms.include?(response.message.source.room)
-        if config.ambient && !response.message.command?
-          issue = fetch_issue(response.match_data['issue'], expected=false)
-          response.reply(format_issue(issue)) if issue
-        end
+        return if response.message.command?
+        return unless config.ambient
+
+        issue = fetch_issue(response.match_data['issue'], false)
+        response.reply(format_issue(issue)) if issue
       end
       # rubocop:enable Metrics/AbcSize
     end

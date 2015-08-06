@@ -10,7 +10,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
                     assignee: double(displayName: 'A Person'),
                     priority: double(name: 'P0'),
                     status: double(name: 'In Progress'),
-                    fixVersions: [{'name' => 'Sprint 2'}],
+                    fixVersions: [{ 'name' => 'Sprint 2' }],
                     key: 'XYZ-987')
     allow(result).to receive('save') { true }
     allow(result).to receive('fetch') { true }
@@ -34,7 +34,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
                      assignee: double(displayName: 'A Person'),
                      priority: double(name: 'P0'),
                      status: double(name: 'In Progress'),
-                     fixVersions: [{'name' => 'Sprint 2'}],
+                     fixVersions: [{ 'name' => 'Sprint 2' }],
                      key: 'XYZ-987'),
               double(summary: 'Some summary text 2',
                      assignee: double(displayName: 'A Person 2'),
@@ -179,7 +179,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
     end
   end
 
-  describe "#ambient" do
+  describe '#ambient' do
     it 'does not show details for a detected issue by default' do
     end
 
@@ -239,7 +239,6 @@ describe Lita::Handlers::Jira, lita_handler: true do
         end
       end
     end
-
   end
 
   describe '#myissues' do

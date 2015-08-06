@@ -2,11 +2,11 @@
 module JiraHelper
   # Issues
   module Issue
-    def fetch_issue(key, expected=true)
+    def fetch_issue(key, expected = true)
       client.Issue.find(key)
-      rescue
-        log.error('JIRA HTTPError') if expected
-        nil
+    rescue
+      log.error('JIRA HTTPError') if expected
+      nil
     end
 
     # Leverage the jira-ruby Issue.jql search feature
@@ -19,11 +19,14 @@ module JiraHelper
 
     def fetch_project(key)
       client.Project.find(key)
-      rescue
-        log.error('JIRA HTTPError')
-        nil
+    rescue
+      log.error('JIRA HTTPError')
+      nil
     end
-def format_issue(issue)
+
+    # NOTE: Not breaking this function out just yet.
+    # rubocop:disable Metrics/AbcSize
+    def format_issue(issue)
       t(config.format == 'one-line' ? 'issue.oneline' : 'issue.details',
         key: issue.key,
         summary: issue.summary,
@@ -33,6 +36,7 @@ def format_issue(issue)
         priority: optional_issue_property('none') { issue.priority.name },
         url: format_issue_link(issue.key))
     end
+    # rubocop:enable Metrics/AbcSize
 
     # Enumerate issues returned from JQL query and format for response
     #
