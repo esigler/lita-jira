@@ -10,8 +10,8 @@ module Lita
       config :password, required: true, type: String
       config :site, required: true, type: String
       config :context, required: false, type: String, default: ''
-      config :ambient, required: false, types: [TrueClass, FalseClass], default: false
       config :format, required: false, type: String, default: 'verbose'
+      config :ambient, required: false, types: [TrueClass, FalseClass], default: false
       config :ignore, required: false, type: Array, default: []
       config :rooms, required: false, type: Array
 
