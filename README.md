@@ -36,8 +36,8 @@ config.handlers.jira.site     = 'https://your.jira.instance.example.com/'
 
 ``` ruby
 config.handlers.jira.context = '/myjira'
-config.handlers.jira.ambient = true
 config.handlers.jira.format = 'one-line'
+config.handlers.jira.ambient = true
 config.handlers.jira.ignore = ['Jira', 'Github']
 config.handlers.jira.rooms = ['devtools', 'engineering']
 ```
