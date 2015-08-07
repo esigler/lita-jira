@@ -4,10 +4,10 @@ module JiraHelper
   module Issue
     # NOTE: Prefer this syntax here as it's cleaner
     # rubocop:disable Style/RescueEnsureAlignment
-    def fetch_issue(key)
+    def fetch_issue(key, expected = true)
       client.Issue.find(key)
       rescue
-        log.error('JIRA HTTPError')
+        log.error('JIRA HTTPError') if expected
         nil
     end
     # rubocop:enable Style/RescueEnsureAlignment
@@ -30,14 +30,19 @@ module JiraHelper
     end
     # rubocop:enable Style/RescueEnsureAlignment
 
+    # NOTE: Not breaking this function out just yet.
+    # rubocop:disable Metrics/AbcSize
     def format_issue(issue)
-      t('issue.details',
+      t(config.format == 'one-line' ? 'issue.oneline' : 'issue.details',
         key: issue.key,
         summary: issue.summary,
+        status: issue.status.name,
         assigned: optional_issue_property('unassigned') { issue.assignee.displayName },
+        fixVersion: optional_issue_property('none') { issue.fixVersions.first['name'] },
         priority: optional_issue_property('none') { issue.priority.name },
-        status: issue.status.name)
+        url: format_issue_link(issue.key))
     end
+    # rubocop:enable Metrics/AbcSize
 
     # Enumerate issues returned from JQL query and format for response
     #
@@ -46,6 +51,10 @@ module JiraHelper
     def format_issues(issues)
       results = [t('myissues.info')]
       results.concat(issues.map { |issue| format_issue(issue) })
+    end
+
+    def format_issue_link(key)
+      "#{config.site}#{config.context}/browse/#{key}"
     end
 
     def create_issue(project, subject, summary)

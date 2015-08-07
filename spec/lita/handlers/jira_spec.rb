@@ -1,11 +1,16 @@
 require 'spec_helper'
 
 describe Lita::Handlers::Jira, lita_handler: true do
+  before do
+    registry.config.handlers.jira.site = 'http://jira.local'
+  end
+
   let(:saved_issue) do
     result = double(summary: 'Some summary text',
                     assignee: double(displayName: 'A Person'),
                     priority: double(name: 'P0'),
                     status: double(name: 'In Progress'),
+                    fixVersions: [{ 'name' => 'Sprint 2' }],
                     key: 'XYZ-987')
     allow(result).to receive('save') { true }
     allow(result).to receive('fetch') { true }
@@ -15,6 +20,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
   let(:saved_issue_with_fewer_details) do
     result = double(summary: 'Some summary text',
                     status: double(name: 'In Progress'),
+                    fixVersions: [],
                     key: 'XYZ-987')
     allow(result).to receive('assignee').and_raise
     allow(result).to receive('priority').and_raise
@@ -28,11 +34,13 @@ describe Lita::Handlers::Jira, lita_handler: true do
                      assignee: double(displayName: 'A Person'),
                      priority: double(name: 'P0'),
                      status: double(name: 'In Progress'),
+                     fixVersions: [{ 'name' => 'Sprint 2' }],
                      key: 'XYZ-987'),
               double(summary: 'Some summary text 2',
                      assignee: double(displayName: 'A Person 2'),
                      priority: double(name: 'P1'),
                      status: double(name: 'In Progress 2'),
+                     fixVersions: [],
                      key: 'XYZ-988')]
     allow(result).to receive('save') { true }
     allow(result).to receive('fetch') { true }
@@ -111,21 +119,35 @@ describe Lita::Handlers::Jira, lita_handler: true do
     it 'shows details with a valid issue' do
       grab_request(valid_client)
       send_command('jira details XYZ-987')
-      expect(replies.last).to eq('XYZ-987: Some summary text, assigned to: ' \
-                                 'A Person, priority: P0, status: In Progress')
+      expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
     end
 
     it 'shows fewer details when the property is not set' do
       grab_request(client_with_fewer_details)
       send_command('jira details XYZ-987')
-      expect(replies.last).to eq('XYZ-987: Some summary text, assigned to: ' \
-                                 'unassigned, priority: none, status: In Progress')
+      expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: unassigned, fixVersion: none, priority: none\nhttp://jira.local/browse/XYZ-987")
+    end
+
+    it 'displays the correct URL when config.context is set' do
+      registry.config.handlers.jira.context = '/myjira'
+      grab_request(valid_client)
+      send_command('jira details XYZ-987')
+      expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/myjira/browse/XYZ-987")
+      registry.config.handlers.jira.context = ''
     end
 
     it 'warns the user when the issue is not valid' do
       grab_request(failed_find_issue)
       send_command('jira details XYZ-987')
       expect(replies.last).to eq('Error fetching JIRA issue')
+    end
+
+    it 'shows details on one line with a valid issue if config.format is one-line' do
+      registry.config.handlers.jira.format = 'one-line'
+      grab_request(valid_client)
+      send_command('jira details XYZ-987')
+      expect(replies.last).to eq('http://jira.local/browse/XYZ-987 - In Progress, A Person - Some summary text')
+      registry.config.handlers.jira.format = 'verbose'
     end
   end
 
@@ -157,6 +179,68 @@ describe Lita::Handlers::Jira, lita_handler: true do
     end
   end
 
+  describe '#ambient' do
+    it 'does not show details for a detected issue by default' do
+    end
+
+    context 'when enabled in config' do
+      before(:each) do
+        registry.config.handlers.jira.ambient = true
+        grab_request(valid_client)
+      end
+
+      it 'shows details for a detected issue in a message' do
+        send_message('foo XYZ-987 bar')
+        expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
+      end
+
+      it 'does not show details for a detected issue in a command' do
+        send_command('foo XYZ-987 bar')
+        expect(replies.size).to eq(0)
+      end
+
+      context 'and an ignore list is defined' do
+        before(:each) do
+          @user1 = Lita::User.create(1, name: 'User1')
+          @user2 = Lita::User.create(2, name: 'User2')
+          registry.config.handlers.jira.ignore = ['User2']
+        end
+
+        it 'shows details for a detected issue sent by a user absent from the list' do
+          send_message('foo XYZ-987 bar', as: @user1)
+          expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
+        end
+
+        it 'does not show details for a detected issue sent by a user on the list' do
+          send_message('foo XYZ-987 bar', as: @user2)
+          expect(replies.size).to eq(0)
+        end
+      end
+
+      context 'and a room list is defined' do
+        def send_room_message(body, room)
+          robot.receive(Lita::Message.new(robot, body, Lita::Source.new(user: user, room: room)))
+        end
+
+        before(:each) do
+          @room1 = 'Room1'
+          @room2 = 'Room2'
+          registry.config.handlers.jira.rooms = [@room1]
+        end
+
+        it 'shows details for a detected issue sent in a room on the list' do
+          send_room_message('foo XYZ-987 bar', @room1)
+          expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
+        end
+
+        it 'does not show details for a detected issue sent in a room absent from the list' do
+          send_room_message('foo XYZ-987 bar', @room2)
+          expect(replies.size).to eq(0)
+        end
+      end
+    end
+  end
+
   describe '#myissues' do
     before { send_command('jira forget') }
     context 'when not identified' do
@@ -178,9 +262,11 @@ describe Lita::Handlers::Jira, lita_handler: true do
       it 'shows results when returned' do
         grab_request(valid_client)
         send_command('jira myissues')
-        expect(replies.last).to eq(['Here are issues currently assigned to you:',
-                                    'XYZ-987: Some summary text, assigned to: A Person, priority: P0, status: In Progress',
-                                    'XYZ-988: Some summary text 2, assigned to: A Person 2, priority: P1, status: In Progress 2'])
+        expect(replies.last).to eq([
+          'Here are issues currently assigned to you:',
+          "[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987",
+          "[XYZ-988] Some summary text 2\nStatus: In Progress 2, assigned to: A Person 2, fixVersion: none, priority: P1\nhttp://jira.local/browse/XYZ-988"
+        ])
       end
 
       it 'shows an error when the search fails' do

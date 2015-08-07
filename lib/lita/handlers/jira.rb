@@ -6,10 +6,14 @@ module Lita
     class Jira < Handler
       namespace 'Jira'
 
-      config :username, required: true
-      config :password, required: true
-      config :site, required: true
-      config :context, required: true
+      config :username, required: true, type: String
+      config :password, required: true, type: String
+      config :site, required: true, type: String
+      config :context, required: false, type: String, default: ''
+      config :format, required: false, type: String, default: 'verbose'
+      config :ambient, required: false, types: [TrueClass, FalseClass], default: false
+      config :ignore, required: false, type: Array, default: []
+      config :rooms, required: false, type: Array
 
       include ::JiraHelper::Issue
       include ::JiraHelper::Misc
@@ -61,6 +65,9 @@ module Lita
         }
       )
 
+      # Detect ambient JIRA issues in non-command messages
+      route ISSUE_PATTERN, :ambient, command: false
+
       def summary(response)
         issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
@@ -105,9 +112,20 @@ module Lita
 
         response.reply(format_issues(issues))
       end
+
+      def ambient(response)
+        return if invalid_ambient(response)
+        issue = fetch_issue(response.match_data['issue'], false)
+        response.reply(format_issue(issue)) if issue
+      end
+
+      private
+
+      def invalid_ambient(response)
+        response.message.command? || !config.ambient || config.ignore.include?(response.user.name) || (config.rooms && !config.rooms.include?(response.message.source.room))
+      end
       # rubocop:enable Metrics/AbcSize
     end
-
     Lita.register_handler(Jira)
   end
 end
