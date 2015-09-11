@@ -31,14 +31,14 @@ config.handlers.jira.site     = 'https://your.jira.instance.example.com/'
 * `context` (string) - If your instance is in a /subdirectory, put that here. Default: `''`
 * `format` (string) - You can select a compact one line issue summary by setting this parameter to `one-line`. Default: `verbose`
 * `ambient` (boolean) - When set to `true`, Lita will show JIRA issue details when a JIRA issue key is mentioned in chat, outside the context of a command. Default: `false`
-* `ignore` (array) - Prevent ambient JIRA issue detection in certain users' messages. Default: `[]`
+* `ignore` (array) - Prevent ambient JIRA issue detection in certain users' messages. Accepts user names, mention names, and IDs. Default: `[]`
 * `rooms` (array) - Limit ambient JIRA issue detection to a certain list of rooms. If unspecified, the bot will respond to detected issues in all rooms.
 
 ``` ruby
 config.handlers.jira.context = '/myjira'
 config.handlers.jira.format = 'one-line'
 config.handlers.jira.ambient = true
-config.handlers.jira.ignore = ['Jira', 'Github']
+config.handlers.jira.ignore = ['Jira', 'Github', 'U1234']
 config.handlers.jira.rooms = ['devtools', 'engineering']
 ```
 
