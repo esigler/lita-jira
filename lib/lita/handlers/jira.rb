@@ -3,6 +3,7 @@ module Lita
   # Because we can.
   module Handlers
     # Main handler
+    # rubocop:disable Metrics/ClassLength
     class Jira < Handler
       namespace 'Jira'
 
@@ -114,20 +115,23 @@ module Lita
       end
 
       def ambient(response)
-        return if invalid_ambient(response)
+        return if invalid_ambient?(response)
         issue = fetch_issue(response.match_data['issue'], false)
         response.reply(format_issue(issue)) if issue
       end
 
       private
 
-      def invalid_ambient(response)
-        # rubocop:disable Metrics/LineLength
-        response.message.command? || !config.ambient || config.ignore.include?(response.user.name) || config.ignore.include?(response.user.id) || (config.rooms && !config.rooms.include?(response.message.source.room))
-        # rubocop:enable Metrics/LineLength
+      def invalid_ambient?(response)
+        response.message.command? || !config.ambient || ignored?(response.user) || (config.rooms && !config.rooms.include?(response.message.source.room))
+      end
+
+      def ignored?(user)
+        config.ignore.include?(user.id) || config.ignore.include?(user.mention_name) || config.ignore.include?(user.name)
       end
       # rubocop:enable Metrics/AbcSize
     end
+    # rubocop:enable Metrics/ClassLength
     Lita.register_handler(Jira)
   end
 end

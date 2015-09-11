@@ -201,10 +201,11 @@ describe Lita::Handlers::Jira, lita_handler: true do
 
       context 'and an ignore list is defined' do
         before(:each) do
-          @user1 = Lita::User.create('U1', name: 'User1')
-          @user2 = Lita::User.create('U2', name: 'User2')
-          @user3 = Lita::User.create('U3', name: 'User3')
-          registry.config.handlers.jira.ignore = %w(User2 U3)
+          @user1 = Lita::User.create('U1', name: 'User 1', mention_name: 'user1')
+          @user2 = Lita::User.create('U2', name: 'User 2', mention_name: 'user2')
+          @user3 = Lita::User.create('U3', name: 'User 3', mention_name: 'user3')
+          @user4 = Lita::User.create('U4', name: 'User 4', mention_name: 'user4')
+          registry.config.handlers.jira.ignore = ['User 2', 'U3', 'user4']
         end
 
         it 'shows details for a detected issue sent by a user absent from the list' do
@@ -219,6 +220,11 @@ describe Lita::Handlers::Jira, lita_handler: true do
 
         it 'does not show details for a detected issue sent by a user whose ID is on the list' do
           send_message('foo XYZ-987 bar', as: @user3)
+          expect(replies.size).to eq(0)
+        end
+
+        it 'does not show details for a detected issue sent by a user whose mention name is on the list' do
+          send_message('foo XYZ-987 bar', as: @user4)
           expect(replies.size).to eq(0)
         end
       end
