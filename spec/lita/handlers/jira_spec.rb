@@ -201,9 +201,10 @@ describe Lita::Handlers::Jira, lita_handler: true do
 
       context 'and an ignore list is defined' do
         before(:each) do
-          @user1 = Lita::User.create(1, name: 'User1')
-          @user2 = Lita::User.create(2, name: 'User2')
-          registry.config.handlers.jira.ignore = ['User2']
+          @user1 = Lita::User.create('U1', name: 'User1')
+          @user2 = Lita::User.create('U2', name: 'User2')
+          @user3 = Lita::User.create('U3', name: 'User3')
+          registry.config.handlers.jira.ignore = %w(User2 U3)
         end
 
         it 'shows details for a detected issue sent by a user absent from the list' do
@@ -211,8 +212,13 @@ describe Lita::Handlers::Jira, lita_handler: true do
           expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
         end
 
-        it 'does not show details for a detected issue sent by a user on the list' do
+        it 'does not show details for a detected issue sent by a user whose name is on the list' do
           send_message('foo XYZ-987 bar', as: @user2)
+          expect(replies.size).to eq(0)
+        end
+
+        it 'does not show details for a detected issue sent by a user whose ID is on the list' do
+          send_message('foo XYZ-987 bar', as: @user3)
           expect(replies.size).to eq(0)
         end
       end
@@ -262,7 +268,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
       it 'shows results when returned' do
         grab_request(valid_client)
         send_command('jira myissues')
-        expect(replies.last).to eq([
+        expect(replies[-3..-1]).to eq([
           'Here are issues currently assigned to you:',
           "[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987",
           "[XYZ-988] Some summary text 2\nStatus: In Progress 2, assigned to: A Person 2, fixVersion: none, priority: P1\nhttp://jira.local/browse/XYZ-988"

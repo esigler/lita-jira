@@ -122,7 +122,9 @@ module Lita
       private
 
       def invalid_ambient(response)
-        response.message.command? || !config.ambient || config.ignore.include?(response.user.name) || (config.rooms && !config.rooms.include?(response.message.source.room))
+        # rubocop:disable Metrics/LineLength
+        response.message.command? || !config.ambient || config.ignore.include?(response.user.name) || config.ignore.include?(response.user.id) || (config.rooms && !config.rooms.include?(response.message.source.room))
+        # rubocop:enable Metrics/LineLength
       end
       # rubocop:enable Metrics/AbcSize
     end
