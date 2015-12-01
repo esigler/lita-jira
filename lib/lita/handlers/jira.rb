@@ -67,7 +67,7 @@ module Lita
       )
 
       # Detect ambient JIRA issues in non-command messages
-      route ISSUE_PATTERN, :ambient, command: false
+      route AMBIENT_PATTERN, :ambient, command: false
 
       def summary(response)
         issue = fetch_issue(response.match_data['issue'])

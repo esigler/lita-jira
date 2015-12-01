@@ -180,8 +180,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
   end
 
   describe '#ambient' do
-    it 'does not show details for a detected issue by default' do
-    end
+    it 'does not show details for a detected issue by default'
 
     context 'when enabled in config' do
       before(:each) do
@@ -191,11 +190,18 @@ describe Lita::Handlers::Jira, lita_handler: true do
 
       it 'shows details for a detected issue in a message' do
         send_message('foo XYZ-987 bar')
-        expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
+        send_message('foo XYZ-987?')
+        expect(replies.size).to eq(2)
       end
 
       it 'does not show details for a detected issue in a command' do
         send_command('foo XYZ-987 bar')
+        expect(replies.size).to eq(0)
+      end
+
+      it 'does not show details for a issue in a URL-ish context' do
+        send_message('http://www.example.com/XYZ-987.html')
+        send_message('http://www.example.com/someother-XYZ-987.html')
         expect(replies.size).to eq(0)
       end
 
