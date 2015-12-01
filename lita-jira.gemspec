@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-jira'
-  spec.version       = '0.7.1'
+  spec.version       = '0.7.2'
   spec.authors       = ['Eric Sigler', 'Matt Critchlow']
   spec.email         = ['me@esigler.com', 'matt.critchlow@gmail.com']
   spec.description   = 'A JIRA plugin for Lita.'
