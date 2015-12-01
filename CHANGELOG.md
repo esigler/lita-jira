@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning] and [Keep A Changelog].
 
 ## [0.7.2] - 2015-12-01
 ### Fixed
+- Updated Simplecov invocation to newer style
 - Adjusted ambient issue detection to avoid triggering on URL-like strings
 
 [Unreleased]: https://github.com/esigler/lita-jira/compare/v0.7.2...HEAD
