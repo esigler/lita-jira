@@ -9,7 +9,7 @@ module JiraHelper
         site: config.site,
         context_path: config.context,
         auth_type: :basic,
-        use_ssl: config.use_ssl,
+        use_ssl: config.use_ssl
       )
     end
   end
