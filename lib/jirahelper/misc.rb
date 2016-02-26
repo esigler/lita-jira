@@ -8,7 +8,8 @@ module JiraHelper
         password: config.password,
         site: config.site,
         context_path: config.context,
-        auth_type: :basic
+        auth_type: :basic,
+        use_ssl: config.use_ssl
       )
     end
   end

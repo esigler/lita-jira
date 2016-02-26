@@ -15,6 +15,7 @@ module Lita
       config :ambient, required: false, types: [TrueClass, FalseClass], default: false
       config :ignore, required: false, type: Array, default: []
       config :rooms, required: false, type: Array
+      config :use_ssl, required: false, types: [TrueClass, FalseClass], default: true
 
       include ::JiraHelper::Issue
       include ::JiraHelper::Misc
@@ -108,9 +109,9 @@ module Lita
           response.reply(t('error.request'))
           return
         end
-
+        # rubocop:disable Style/ZeroLengthPredicate
         return response.reply(t('myissues.empty')) unless issues.size > 0
-
+        # rubocop:enable Style/ZeroLengthPredicate
         response.reply(format_issues(issues))
       end
 
