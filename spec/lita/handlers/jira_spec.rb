@@ -189,9 +189,10 @@ describe Lita::Handlers::Jira, lita_handler: true do
       end
 
       it 'shows details for a detected issue in a message' do
+        send_message('XYZ-987')
         send_message('foo XYZ-987 bar')
         send_message('foo XYZ-987?')
-        expect(replies.size).to eq(2)
+        expect(replies.size).to eq(3)
       end
 
       it 'does not show details for a detected issue in a command' do
@@ -200,8 +201,10 @@ describe Lita::Handlers::Jira, lita_handler: true do
       end
 
       it 'does not show details for a issue in a URL-ish context' do
+        send_message('http://www.example.com/XYZ-987')
         send_message('http://www.example.com/XYZ-987.html')
         send_message('http://www.example.com/someother-XYZ-987.html')
+        send_message('TIL http://ruby-doc.org/core-2.3.0/Enumerable.html#method-i-each_slice')
         expect(replies.size).to eq(0)
       end
 
