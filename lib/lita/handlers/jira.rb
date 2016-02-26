@@ -109,9 +109,9 @@ module Lita
           response.reply(t('error.request'))
           return
         end
-        # rubocop:disable Style/ZeroLengthPredicate
-        return response.reply(t('myissues.empty')) unless issues.size > 0
-        # rubocop:enable Style/ZeroLengthPredicate
+
+        return response.reply(t('myissues.empty')) if issues.empty?
+
         response.reply(format_issues(issues))
       end
 

@@ -284,10 +284,10 @@ describe Lita::Handlers::Jira, lita_handler: true do
         grab_request(valid_client)
         send_command('jira myissues')
         expect(replies[-3..-1]).to eq([
-          'Here are issues currently assigned to you:',
-          "[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987",
-          "[XYZ-988] Some summary text 2\nStatus: In Progress 2, assigned to: A Person 2, fixVersion: none, priority: P1\nhttp://jira.local/browse/XYZ-988"
-        ])
+                                        'Here are issues currently assigned to you:',
+                                        "[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987",
+                                        "[XYZ-988] Some summary text 2\nStatus: In Progress 2, assigned to: A Person 2, fixVersion: none, priority: P1\nhttp://jira.local/browse/XYZ-988"
+                                      ])
       end
 
       it 'shows an error when the search fails' do

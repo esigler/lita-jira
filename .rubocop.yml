@@ -4,10 +4,3 @@ FileName:
 
 LineLength:
   Max: 190
-
-Style/IndentArray:
-  EnforcedStyle: consistent
-  SupportedStyles:
-    - special_inside_parentheses
-    - consistent
-
