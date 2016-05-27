@@ -67,6 +67,15 @@ module Lita
         }
       )
 
+      route(
+        /^jira\spoint\s#{ISSUE_PATTERN}\sas\s\d{1,2}$/,
+        :point,
+        command: true,
+        help: {
+          t('help.comment.syntax') => t('help.comment.desc')
+        }
+      )
+
       # Detect ambient JIRA issues in non-command messages
       route AMBIENT_PATTERN, :ambient, command: false
 
@@ -88,6 +97,13 @@ module Lita
         comment = issue.comments.build
         comment.save!(body: response.match_data['comment'])
         response.reply(t('comment.added', issue: issue.key))
+      end
+
+      def point(response)
+        raise "!"
+        issue = fetch_issue(response.match_data['issue'])
+        return response.reply(t('error.request')) unless issue
+        #response.reply(t('comment.added', issue: issue.key))
       end
 
       def todo(response)
