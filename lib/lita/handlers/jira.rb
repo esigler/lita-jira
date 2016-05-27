@@ -68,11 +68,11 @@ module Lita
       )
 
       route(
-        /^jira\spoint\s#{ISSUE_PATTERN}\sas\s\d{1,2}$/,
+        /^jira\spoint\s#{ISSUE_PATTERN}\sas\s#{POINTS_PATTERN}$/,
         :point,
         command: true,
         help: {
-          t('help.comment.syntax') => t('help.comment.desc')
+          t('help.points.syntax') => t('help.points.desc')
         }
       )
 
@@ -100,10 +100,11 @@ module Lita
       end
 
       def point(response)
-        raise "!"
         issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
-        #response.reply(t('comment.added', issue: issue.key))
+        points = response.match_data['points']
+        issue.save(fields: { customfield_10004: points.to_i }) # Story points is a custom field with id 10004
+        response.reply(t('points.added', issue: issue.key, points: points))
       end
 
       def todo(response)

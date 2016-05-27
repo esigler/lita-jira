@@ -96,6 +96,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
     is_expected.to route_command('jira ABC-123').to(:summary)
     is_expected.to route_command('jira details ABC-123').to(:details)
     is_expected.to route_command('jira comment on ABC-123 "You just need a cat"').to(:comment)
+    is_expected.to route_command('jira point ABC-123 as 2').to(:point)
     is_expected.to route_command('todo ABC "summary text"').to(:todo)
     is_expected.to route_command('todo ABC "summary text" "subject text"').to(:todo)
     is_expected.to route_command('jira myissues').to(:myissues)
@@ -161,6 +162,20 @@ describe Lita::Handlers::Jira, lita_handler: true do
     it 'warns the user when the issue is not valid' do
       grab_request(failed_find_issue)
       send_command('jira comment on XYZ-987 "Testing"')
+      expect(replies.last).to eq('Error fetching JIRA issue')
+    end
+  end
+
+  describe '#point' do
+    it 'updates the issue with a story point value' do
+      grab_request(valid_client)
+      send_command('jira point XYZ-987 as 5')
+      expect(replies.last).to eq('Added a point estimation of 5 to XYZ-987')
+    end
+
+    it 'warns the user when the issue is not valid' do
+      grab_request(failed_find_issue)
+      send_command('jira point XYZ-987 as 5')
       expect(replies.last).to eq('Error fetching JIRA issue')
     end
   end

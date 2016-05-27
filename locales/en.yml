@@ -6,6 +6,7 @@ en:
           already_identified: "You are already identified as %{email}"
           not_identified: You do not have an email address on record
           request: Error fetching JIRA issue
+          points: Point values must be a whole number
         help:
           identify:
             syntax: jira identify <email address>
@@ -19,6 +20,9 @@ en:
           comment:
             syntax: jira comment on <issue> <comment text>
             desc: Adds <comment text> to <issue>
+          point:
+            syntax: jira point <issue> as <points>
+            desc: Adds <points> Story Points to <issue>
           details:
             syntax: jira details <issue>
             desc: Shows detailed information for <issue>
@@ -42,6 +46,8 @@ en:
           summary: "%{key}: %{summary}"
         comment:
           added: "Comment added to %{issue}"
+        points:
+          added: "Added a point estimation of %{points} to %{issue}"
         myissues:
           empty: "You do not have any assigned issues. Great job!"
           info: "Here are issues currently assigned to you:"
