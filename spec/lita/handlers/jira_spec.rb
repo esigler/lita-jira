@@ -169,7 +169,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
   describe '#point' do
     it 'updates the issue with a story point value' do
       registry.config.handlers.jira.points_field = 'customfield_10004'
-      expect(saved_issue).to receive(:save).with(fields: { 'customfield_10004' => 5 })
+      expect(saved_issue).to receive(:save).with(fields: { customfield_10004: 5 })
       grab_request(valid_client)
       send_command('jira point XYZ-987 as 5')
       expect(replies.last).to eq('Added a point estimation of 5 to XYZ-987')

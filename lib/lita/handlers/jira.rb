@@ -105,7 +105,7 @@ module Lita
         issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
         points = response.match_data['points']
-        issue.save(fields: Hash[config.points_field => points.to_i ])
+        issue.save(fields: {config.points_field.to_sym => points.to_i})
         response.reply(t('points.added', issue: issue.key, points: points))
       end
 
