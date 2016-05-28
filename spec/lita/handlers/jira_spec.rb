@@ -167,23 +167,25 @@ describe Lita::Handlers::Jira, lita_handler: true do
   end
 
   describe '#point' do
+    before(:each) do
+      registry.config.handlers.jira.points_field = 'some_custom_points_field'
+    end
+
     it 'updates the issue with a story point value' do
-      registry.config.handlers.jira.points_field = 'customfield_10004'
-      expect(saved_issue).to receive(:save).with(fields: { customfield_10004: 5 })
+      expect(saved_issue).to receive(:save).with(fields: { some_custom_points_field: 5 })
       grab_request(valid_client)
       send_command('jira point XYZ-987 as 5')
       expect(replies.last).to eq('Added a point estimation of 5 to XYZ-987')
     end
 
     it 'warns the user when the issue is not valid' do
-      registry.config.handlers.jira.points_field = 'customfield_10004'
       grab_request(failed_find_issue)
       send_command('jira point XYZ-987 as 5')
       expect(replies.last).to eq('Error fetching JIRA issue')
     end
 
     it 'warns the user when the config points_field is not defined' do
-      registry.config.handlers.jira.points_field = nil
+      registry.config.handlers.jira.points_field = ''
       grab_request(valid_client)
       send_command('jira point XYZ-987 as 5')
       expect(replies.last).to eq('You must define `points_field` in your lita_config')

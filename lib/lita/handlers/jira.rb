@@ -101,11 +101,11 @@ module Lita
       end
 
       def point(response)
-        return response.reply(t('error.field_undefined')) unless config.points_field
+        return response.reply(t('error.field_undefined')) if config.points_field.blank?
         issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
         points = response.match_data['points']
-        issue.save(fields: {config.points_field.to_sym => points.to_i})
+        issue.save(fields: { config.points_field.to_sym => points.to_i })
         response.reply(t('points.added', issue: issue.key, points: points))
       end
 
