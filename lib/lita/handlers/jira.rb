@@ -100,15 +100,6 @@ module Lita
         response.reply(t('comment.added', issue: issue.key))
       end
 
-      def point(response)
-        return response.reply(t('error.field_undefined')) if config.points_field.blank?
-        issue = fetch_issue(response.match_data['issue'])
-        return response.reply(t('error.request')) unless issue
-        points = response.match_data['points']
-        issue.save(fields: { config.points_field.to_sym => points.to_i })
-        response.reply(t('points.added', issue: issue.key, points: points))
-      end
-
       def todo(response)
         issue = create_issue(response.match_data['project'],
                              response.match_data['subject'],
@@ -118,6 +109,15 @@ module Lita
       end
 
       # rubocop:disable Metrics/AbcSize
+      def point(response)
+        return response.reply(t('error.field_undefined')) if config.points_field.blank?
+        issue = fetch_issue(response.match_data['issue'])
+        return response.reply(t('error.request')) unless issue
+        points = response.match_data['points']
+        issue.save(fields: { config.points_field.to_sym => points.to_i })
+        response.reply(t('points.added', issue: issue.key, points: points))
+      end
+
       def myissues(response)
         return response.reply(t('error.not_identified')) unless user_stored?(response.user)
 
