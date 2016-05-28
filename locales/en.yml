@@ -6,7 +6,7 @@ en:
           already_identified: "You are already identified as %{email}"
           not_identified: You do not have an email address on record
           request: Error fetching JIRA issue
-          points: Point values must be a whole number
+          field_undefined: You must define `points_field` in your lita_config
         help:
           identify:
             syntax: jira identify <email address>

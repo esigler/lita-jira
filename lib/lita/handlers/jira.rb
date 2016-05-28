@@ -16,6 +16,7 @@ module Lita
       config :ignore, required: false, type: Array, default: []
       config :rooms, required: false, type: Array
       config :use_ssl, required: false, types: [TrueClass, FalseClass], default: true
+      config :points_field, required: false, type: String
 
       include ::JiraHelper::Issue
       include ::JiraHelper::Misc
@@ -100,10 +101,11 @@ module Lita
       end
 
       def point(response)
+        return response.reply(t('error.field_undefined')) unless config.points_field
         issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
         points = response.match_data['points']
-        issue.save(fields: { customfield_10004: points.to_i }) # Story points is a custom field with id 10004
+        issue.save(fields: Hash[config.points_field => points.to_i ])
         response.reply(t('points.added', issue: issue.key, points: points))
       end
 
