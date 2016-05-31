@@ -153,8 +153,7 @@ module Lita
         begin
           issue.save!(fields: { config.points_field.to_sym => points.to_i })
         rescue
-          response.reply(t('error.unable_to_point'))
-          return
+          return response.reply(t('error.unable_to_point'))
         end
         response.reply(t('point.added', issue: issue.key, points: points))
       end
