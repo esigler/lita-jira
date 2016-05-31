@@ -73,7 +73,7 @@ module Lita
         :point,
         command: true,
         help: {
-          t('help.points.syntax') => t('help.points.desc')
+          t('help.point.syntax') => t('help.point.desc')
         }
       )
 
@@ -113,9 +113,7 @@ module Lita
         return response.reply(t('error.field_undefined')) if config.points_field.blank?
         issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
-        points = response.match_data['points']
-        issue.save(fields: { config.points_field.to_sym => points.to_i })
-        response.reply(t('points.added', issue: issue.key, points: points))
+        set_points_on_issue(issue, response)
       end
 
       def myissues(response)
@@ -148,6 +146,17 @@ module Lita
 
       def ignored?(user)
         config.ignore.include?(user.id) || config.ignore.include?(user.mention_name) || config.ignore.include?(user.name)
+      end
+
+      def set_points_on_issue(issue, response)
+        points = response.match_data['points']
+        begin
+          issue.save!(fields: { config.points_field.to_sym => points.to_i })
+        rescue
+          response.reply(t('error.unable_to_point'))
+          return
+        end
+        response.reply(t('point.added', issue: issue.key, points: points))
       end
       # rubocop:enable Metrics/AbcSize
     end

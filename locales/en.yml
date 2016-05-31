@@ -7,6 +7,7 @@ en:
           not_identified: You do not have an email address on record
           request: Error fetching JIRA issue
           field_undefined: You must define `points_field` in your lita_config
+          unable_to_point: Cannot set points on issue
         help:
           identify:
             syntax: jira identify <email address>
@@ -22,7 +23,7 @@ en:
             desc: Adds <comment text> to <issue>
           point:
             syntax: jira point <issue> as <points>
-            desc: Adds <points> Story Points to <issue>
+            desc: Adds <points> points to <issue>
           details:
             syntax: jira details <issue>
             desc: Shows detailed information for <issue>
@@ -46,7 +47,7 @@ en:
           summary: "%{key}: %{summary}"
         comment:
           added: "Comment added to %{issue}"
-        points:
+        point:
           added: "Added a point estimation of %{points} to %{issue}"
         myissues:
           empty: "You do not have any assigned issues. Great job!"
