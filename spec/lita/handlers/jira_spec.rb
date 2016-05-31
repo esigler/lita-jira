@@ -13,6 +13,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
                     fixVersions: [{ 'name' => 'Sprint 2' }],
                     key: 'XYZ-987')
     allow(result).to receive('save') { true }
+    allow(result).to receive('save!') { true }
     allow(result).to receive('fetch') { true }
     result
   end
@@ -96,6 +97,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
     is_expected.to route_command('jira ABC-123').to(:summary)
     is_expected.to route_command('jira details ABC-123').to(:details)
     is_expected.to route_command('jira comment on ABC-123 "You just need a cat"').to(:comment)
+    is_expected.to route_command('jira point ABC-123 as 2').to(:point)
     is_expected.to route_command('todo ABC "summary text"').to(:todo)
     is_expected.to route_command('todo ABC "summary text" "subject text"').to(:todo)
     is_expected.to route_command('jira myissues').to(:myissues)
@@ -162,6 +164,39 @@ describe Lita::Handlers::Jira, lita_handler: true do
       grab_request(failed_find_issue)
       send_command('jira comment on XYZ-987 "Testing"')
       expect(replies.last).to eq('Error fetching JIRA issue')
+    end
+  end
+
+  describe '#point' do
+    before(:each) do
+      registry.config.handlers.jira.points_field = 'some_custom_points_field'
+    end
+
+    it 'updates the issue with a story point value' do
+      expect(saved_issue).to receive(:save!).with(fields: { some_custom_points_field: 5 })
+      grab_request(valid_client)
+      send_command('jira point XYZ-987 as 5')
+      expect(replies.last).to eq('Added a point estimation of 5 to XYZ-987')
+    end
+
+    it 'warns the user when the issue is not valid' do
+      grab_request(failed_find_issue)
+      send_command('jira point XYZ-987 as 5')
+      expect(replies.last).to eq('Error fetching JIRA issue')
+    end
+
+    it 'warns the user when the config points_field is not defined' do
+      registry.config.handlers.jira.points_field = ''
+      grab_request(valid_client)
+      send_command('jira point XYZ-987 as 5')
+      expect(replies.last).to eq('You must define `points_field` in your lita_config')
+    end
+
+    it 'warns the user when settings points fails' do
+      allow(saved_issue).to receive(:save!).and_throw(JIRA::HTTPError)
+      grab_request(valid_client)
+      send_command('jira point XYZ-987 as 5')
+      expect(replies.last).to eq('Cannot set points on issue')
     end
   end
 
