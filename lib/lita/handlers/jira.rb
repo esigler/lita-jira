@@ -83,7 +83,7 @@ module Lita
       def summary(response)
         issue = fetch_issue(response.match_data['issue'])
         return response.reply(t('error.request')) unless issue
-        response.reply(t('issue.summary', key: issue.key, summary: issue.summary))
+        response.reply(t('issue.summary', key: "#{config.site}#{config.context}browse/#{issue.key}", summary: issue.summary))
       end
 
       def details(response)
@@ -97,7 +97,7 @@ module Lita
         return response.reply(t('error.request')) unless issue
         comment = issue.comments.build
         comment.save!(body: response.match_data['comment'])
-        response.reply(t('comment.added', issue: issue.key))
+        response.reply(t('comment.added', issue: "#{config.site}#{config.context}browse/#{issue.key}"))
       end
 
       def todo(response)
@@ -105,7 +105,7 @@ module Lita
                              response.match_data['subject'],
                              response.match_data['summary'])
         return response.reply(t('error.request')) unless issue
-        response.reply(t('issue.created', key: issue.key))
+        response.reply(t('issue.created', key: "#{config.site}#{config.context}browse/#{issue.key}"))
       end
 
       # rubocop:disable Metrics/AbcSize
@@ -155,7 +155,7 @@ module Lita
         rescue
           return response.reply(t('error.unable_to_point'))
         end
-        response.reply(t('point.added', issue: issue.key, points: points))
+        response.reply(t('point.added', issue: "#{config.site}#{config.context}browse/#{issue.key}", points: points))
       end
       # rubocop:enable Metrics/AbcSize
     end
