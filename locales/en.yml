@@ -31,8 +31,8 @@ en:
             syntax: jira <issue>
             desc: Shows summary for <issue>
           todo:
-            syntax: todo <project> "<subject>" ["<summary>"]
-            desc: Creates an issue in <project> with <subject> and optionally <summary>
+            syntax: todo <project> "<summary>" "<description>"
+            desc: Creates an issue in <project> with <summary> and <description>
           myissues:
             syntax: jira myissues
             desc: If identified, will display a list of issues currently assigned to you

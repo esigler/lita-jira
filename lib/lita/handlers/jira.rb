@@ -60,7 +60,7 @@ module Lita
       )
 
       route(
-        /^todo\s#{PROJECT_PATTERN}\s#{SUBJECT_PATTERN}(\s#{SUMMARY_PATTERN})?$/,
+        /^todo\s#{PROJECT_PATTERN}\s#{SUBJECT_PATTERN}\s#{SUMMARY_PATTERN}$/,
         :todo,
         command: true,
         help: {
