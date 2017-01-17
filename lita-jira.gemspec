@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'lita', '>= 4.0'
   spec.add_runtime_dependency 'jira-ruby'
+  spec.add_runtime_dependency 'activesupport', ['>= 4.0', '< 5.0']
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'coveralls'
@@ -23,4 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'jira'
 end
