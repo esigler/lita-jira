@@ -103,7 +103,8 @@ module Lita
       def todo(response)
         issue = create_issue(response.match_data['project'],
                              response.match_data['subject'],
-                             response.match_data['summary'])
+                             response.match_data['summary'],
+                             response.user)
         return response.reply(t('error.request')) unless issue
         response.reply(t('issue.created', key: "#{config.site}#{config.context}browse/#{issue.key}"))
       end
