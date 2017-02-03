@@ -209,7 +209,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
       expect(replies.last).to eq('Issue XYZ-987 created')
     end
 
-    it 'creates a new issue if the project is valid and there is a summary' do
+    it 'creates a new issue if the project is valid and there is a summary and subject' do
       grab_request(valid_client)
       send_command('todo XYZ "Some subject text" "Summary text"')
       expect(replies.last).to eq('Issue XYZ-987 created')
@@ -226,7 +226,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
     it 'does not show details for a detected issue by default'
 
     context 'when enabled in config' do
-      before(:each) do
+      before do
         registry.config.handlers.jira.ambient = true
         grab_request(valid_client)
       end
@@ -252,7 +252,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
       end
 
       context 'and an ignore list is defined' do
-        before(:each) do
+        before do
           @user1 = Lita::User.create('U1', name: 'User 1', mention_name: 'user1')
           @user2 = Lita::User.create('U2', name: 'User 2', mention_name: 'user2')
           @user3 = Lita::User.create('U3', name: 'User 3', mention_name: 'user3')
@@ -286,7 +286,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
           robot.receive(Lita::Message.new(robot, body, Lita::Source.new(user: user, room: room)))
         end
 
-        before(:each) do
+        before do
           @room1 = 'Room1'
           @room2 = 'Room2'
           registry.config.handlers.jira.rooms = [@room1]

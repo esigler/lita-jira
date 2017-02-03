@@ -4,8 +4,8 @@ module JiraHelper
   module Issue
     def fetch_issue(key, expected = true)
       client.Issue.find(key)
-    rescue Exception => e
-      log.error('JIRA HTTPError #{e}') if expected
+    rescue => e
+      log.error("JIRA HTTPError #{e}") if expected
       nil
     end
 
@@ -19,8 +19,8 @@ module JiraHelper
 
     def fetch_project(key)
       client.Project.find(key)
-    rescue Exception => e
-      log.error('JIRA HTTPError #{e}')
+    rescue => e
+      log.error("JIRA HTTPError #{e}")
       nil
     end
 
@@ -70,7 +70,7 @@ module JiraHelper
     # @return [Type String] fallback or returned value from yield block
     def optional_issue_property(fallback = '')
       yield
-    rescue 
+    rescue
       fallback
     end
   end
