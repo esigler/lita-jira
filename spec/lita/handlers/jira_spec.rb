@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Lita::Handlers::Jira, lita_handler: true do
   before do
+    registry.register_handler(Lita::Handlers::Jira)
+    registry.register_handler(Lita::Handlers::JiraUtility)
     registry.config.handlers.jira.site = 'http://jira.local'
   end
 
