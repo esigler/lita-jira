@@ -121,8 +121,8 @@ module Lita
 
         begin
           issues = fetch_issues("assignee = '#{get_email(response.user)}' AND status not in (Closed)")
-        rescue
-          log.error('JIRA HTTPError')
+        rescue Exception => e
+          log.error('JIRA HTTPError #{e}')
           response.reply(t('error.request'))
           return
         end
