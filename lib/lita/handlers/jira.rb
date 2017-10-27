@@ -134,8 +134,15 @@ module Lita
 
       def ambient(response)
         return if invalid_ambient?(response)
-        issue = fetch_issue(response.match_data['issue'], false)
-        response.reply(format_issue(issue)) if issue
+        issue_keys = response.matches.map { |match| match[0] }
+        if issue_keys.length > 1
+          jql = "key in (#{issue_keys.join(',')})"
+          issues = fetch_issues(jql)
+          response.reply(format_issues(issues)) unless issues.empty?
+        else
+          issue = fetch_issue(response.match_data['issue'], false)
+          response.reply(format_issue(issue)) if issue
+        end
       end
 
       private

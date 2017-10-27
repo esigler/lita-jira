@@ -280,6 +280,19 @@ describe Lita::Handlers::Jira, lita_handler: true do
       expect(replies.size).to eq(0)
     end
 
+    it 'shows details for all detected issues in a message' do
+      prev_format = registry.config.handlers.jira.format
+      registry.config.handlers.jira.format = 'one-line'
+      send_message('XYZ-987 XYZ-988')
+      registry.config.handlers.jira.format = prev_format
+      expect(replies.size).to eq(3)
+      expect(replies).to eq([
+                              'Here are issues currently assigned to you:',
+                              'http://jira.local/browse/XYZ-987 - In Progress, A Person - Some summary text',
+                              'http://jira.local/browse/XYZ-988 - In Progress 2, A Person 2 - Some summary text 2'
+                            ])
+    end
+
     context 'with rooms configured' do
       def send_room_message(body, room)
         robot.receive(Lita::Message.new(robot, body, Lita::Source.new(user: user, room: room)))
