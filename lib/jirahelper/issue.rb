@@ -13,8 +13,11 @@ module JiraHelper
     #
     # @param [Type String] jql Valid JQL query
     # @return [Type Array] 0-m JIRA Issues returned from query
-    def fetch_issues(jql)
+    def fetch_issues(jql, suppress_exceptions = false)
       client.Issue.jql(jql)
+    rescue => e
+      throw e unless suppress_exceptions
+      nil
     end
 
     def fetch_project(key)

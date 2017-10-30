@@ -280,7 +280,7 @@ describe Lita::Handlers::Jira, lita_handler: true do
       expect(replies.size).to eq(0)
     end
 
-    it 'shows details for all detected issues in a message' do
+    it 'performs a search for multiple issues when more than one issue is detected' do
       prev_format = registry.config.handlers.jira.format
       registry.config.handlers.jira.format = 'one-line'
       send_message('XYZ-987 XYZ-988')
@@ -291,6 +291,23 @@ describe Lita::Handlers::Jira, lita_handler: true do
                               'http://jira.local/browse/XYZ-987 - In Progress, A Person - Some summary text',
                               'http://jira.local/browse/XYZ-988 - In Progress 2, A Person 2 - Some summary text 2'
                             ])
+    end
+
+    it 'does not show details for multiple issues in URL-ish contexts' do
+      send_message('http://www.example.com/XYZ-987 http://www.example.com/XYZ-988')
+      send_message('http://www.example.com/XYZ-987.html http://www.example.com/XYZ-988.html')
+      expect(replies.size).to eq(0)
+    end
+
+    it 'does show details for a single issue when only one is not in a URL-ish context' do
+      send_message('http://www.example.com/XYZ-988 foo XYZ-987 bar http://www.example.com/XYZ-989', as: @user1)
+      expect(replies.size).to eq(1)
+      expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
+    end
+
+    it 'does not show details for multiple detected issues sent by a user whose name is on the list' do
+      send_message('XYZ-987 XYZ-988', as: @user2)
+      expect(replies.size).to eq(0)
     end
 
     context 'with rooms configured' do

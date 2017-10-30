@@ -134,12 +134,21 @@ module Lita
 
       def ambient(response)
         return if invalid_ambient?(response)
+
+        # response.matches returns an array of array of strings, where the inner array is [issue, project]
+        # (e.g. ["XYZ-123", "XYZ"])
         issue_keys = response.matches.map { |match| match[0] }
+
         if issue_keys.length > 1
+          # Note that if any of the issue keys do not exist in JIRA, then an exception is thrown and no results are returned.
+          # A JIRA 'suggestion' has been filed to allow partial results: https://jira.atlassian.com/browse/JRASERVER-40245
           jql = "key in (#{issue_keys.join(',')})"
-          issues = fetch_issues(jql)
-          response.reply(format_issues(issues)) unless issues.empty?
+          # Exceptions are suppressed and no results are returned since this is just ambient parsing and we do not want
+          # the bot to pop up with error messages when an explicit command was not requested.
+          issues = fetch_issues(jql, true)
+          response.reply(format_issues(issues)) if issues && !issues.empty?
         else
+          # Only one issue key was parsed, so directly fetch the one issue.
           issue = fetch_issue(response.match_data['issue'], false)
           response.reply(format_issue(issue)) if issue
         end
