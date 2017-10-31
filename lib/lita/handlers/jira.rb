@@ -135,8 +135,8 @@ module Lita
       def ambient(response)
         return if invalid_ambient?(response)
 
-        # response.matches returns an array of array of strings, where the inner array is [issue, project]
-        # (e.g. ["XYZ-123", "XYZ"])
+        # response.matches returns an array of array of strings, where the inner arrays are [issue, project]
+        # (e.g. [["XYZ-123", "XYZ"]]). We map it into an array of issues (["XYZ-123"]).
         issue_keys = response.matches.map { |match| match[0] }
 
         if issue_keys.length > 1
