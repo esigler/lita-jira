@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Helper functions for lita-jira
 module JiraHelper
   # Utility helpers

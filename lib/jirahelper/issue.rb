@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 # Helper functions for lita-jira
 module JiraHelper
   # Issues
   module Issue
     def fetch_issue(key, expected = true)
       client.Issue.find(key)
-    rescue => e
+    rescue StandardError => e
       log.error("JIRA HTTPError #{e}") if expected
       nil
     end
@@ -15,14 +17,14 @@ module JiraHelper
     # @return [Type Array] 0-m JIRA Issues returned from query
     def fetch_issues(jql, suppress_exceptions = false)
       client.Issue.jql(jql)
-    rescue => e
+    rescue StandardError => e
       throw e unless suppress_exceptions
       nil
     end
 
     def fetch_project(key)
       client.Project.find(key)
-    rescue => e
+    rescue StandardError => e
       log.error("JIRA HTTPError #{e}")
       nil
     end
@@ -73,7 +75,7 @@ module JiraHelper
     # @return [Type String] fallback or returned value from yield block
     def optional_issue_property(fallback = '')
       yield
-    rescue
+    rescue StandardError
       fallback
     end
   end

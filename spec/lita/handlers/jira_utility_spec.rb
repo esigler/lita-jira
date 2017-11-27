@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Lita::Handlers::JiraUtility, lita_handler: true do

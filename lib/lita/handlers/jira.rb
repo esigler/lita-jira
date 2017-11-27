@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # lita-jira plugin
 module Lita
   # Because we can.
@@ -121,7 +123,7 @@ module Lita
 
         begin
           issues = fetch_issues("assignee = '#{get_email(response.user)}' AND status not in (Closed)")
-        rescue => e
+        rescue StandardError => e
           log.error("JIRA HTTPError #{e}")
           response.reply(t('error.request'))
           return
@@ -168,7 +170,7 @@ module Lita
         points = response.match_data['points']
         begin
           issue.save!(fields: { config.points_field.to_sym => points.to_i })
-        rescue
+        rescue StandardError
           return response.reply(t('error.unable_to_point'))
         end
         response.reply(t('point.added', issue: issue.key, points: points))

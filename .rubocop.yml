@@ -10,6 +10,8 @@ LineLength:
 
 Metrics/BlockLength:
   Exclude:
-    - 'Rakefile'
-    - '**/*.rake'
-    - 'spec/**/*.rb'
+    - 'spec/**/*'
+
+Style/FrozenStringLiteralComment:
+  Exclude:
+    - spec/lita/handlers/jira_spec.rb

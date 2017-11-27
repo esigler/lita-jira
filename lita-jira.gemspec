@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Gem::Specification.new do |spec|
   spec.name          = 'lita-jira'
   spec.version       = '0.8.1'
@@ -14,8 +16,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'lita', '>= 4.0'
   spec.add_runtime_dependency 'jira-ruby'
+  spec.add_runtime_dependency 'lita', '>= 4.0'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
