@@ -1,5 +1,5 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
 
-gem 'jira-ruby'
+source 'https://rubygems.org'
 
 gemspec

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # lita-jira plugin
 module Lita
   # Because we can.
@@ -122,8 +124,8 @@ module Lita
 
         begin
           issues = fetch_issues("assignee = '#{get_email(response.user)}' AND status not in (Closed)")
-        rescue
-          log.error('JIRA HTTPError')
+        rescue StandardError => e
+          log.error("JIRA HTTPError #{e}")
           response.reply(t('error.request'))
           return
         end
@@ -135,8 +137,24 @@ module Lita
 
       def ambient(response)
         return if invalid_ambient?(response)
-        issue = fetch_issue(response.match_data['issue'], false)
-        response.reply(format_issue(issue)) if issue
+
+        # response.matches returns an array of array of strings, where the inner arrays are [issue, project]
+        # (e.g. [["XYZ-123", "XYZ"]]). We map it into an array of issues (["XYZ-123"]).
+        issue_keys = response.matches.map { |match| match[0] }
+
+        if issue_keys.length > 1
+          # Note that if any of the issue keys do not exist in JIRA, then an exception is thrown and no results are returned.
+          # A JIRA 'suggestion' has been filed to allow partial results: https://jira.atlassian.com/browse/JRASERVER-40245
+          jql = "key in (#{issue_keys.join(',')})"
+          # Exceptions are suppressed and no results are returned since this is just ambient parsing and we do not want
+          # the bot to pop up with error messages when an explicit command was not requested.
+          issues = fetch_issues(jql, true)
+          response.reply(format_issues(issues)) if issues && !issues.empty?
+        else
+          # Only one issue key was parsed, so directly fetch the one issue.
+          issue = fetch_issue(response.match_data['issue'], false)
+          response.reply(format_issue(issue)) if issue
+        end
       end
 
       private
@@ -153,7 +171,7 @@ module Lita
         points = response.match_data['points']
         begin
           issue.save!(fields: { config.points_field.to_sym => points.to_i })
-        rescue
+        rescue StandardError
           return response.reply(t('error.unable_to_point'))
         end
         response.reply(t('point.added', issue: "#{config.site}#{config.context}browse/#{issue.key}", points: points))

@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Lita::Handlers::Jira, lita_handler: true do
   before do
+    registry.register_handler(Lita::Handlers::Jira)
+    registry.register_handler(Lita::Handlers::JiraUtility)
     registry.config.handlers.jira.site = 'http://jira.local'
   end
 
@@ -207,6 +209,12 @@ describe Lita::Handlers::Jira, lita_handler: true do
       expect(replies.last).to eq('Issue XYZ-987 created')
     end
 
+    it 'creates a new issue if the project is valid and there is a summary and subject' do
+      grab_request(valid_client)
+      send_command('todo XYZ "Some subject text" "Summary text"')
+      expect(replies.last).to eq('Issue XYZ-987 created')
+    end
+
     it 'warns the user when the project is not valid' do
       grab_request(failed_find_project)
       send_command('todo ABC "Some summary text"')
@@ -215,84 +223,116 @@ describe Lita::Handlers::Jira, lita_handler: true do
   end
 
   describe '#ambient' do
-    it 'does not show details for a detected issue by default'
+    before do
+      registry.config.handlers.jira.ambient = true
+      @user1 = Lita::User.create('U1', name: 'User 1', mention_name: 'user1')
+      @user2 = Lita::User.create('U2', name: 'User 2', mention_name: 'user2')
+      @user3 = Lita::User.create('U3', name: 'User 3', mention_name: 'user3')
+      @user4 = Lita::User.create('U4', name: 'User 4', mention_name: 'user4')
+      registry.config.handlers.jira.ignore = ['User 2', 'U3', 'user4']
 
-    context 'when enabled in config' do
-      before(:each) do
-        registry.config.handlers.jira.ambient = true
-        grab_request(valid_client)
+      grab_request(valid_client)
+    end
+
+    it 'does not show details for a detected issue by default' do
+      registry.config.handlers.jira.ambient = false
+      send_message('foo XYZ-987 bar')
+      expect(replies).to eq([])
+    end
+
+    it 'shows details for a detected issue in a message' do
+      send_message('XYZ-987')
+      send_message('foo XYZ-987 bar')
+      send_message('foo XYZ-987?')
+      expect(replies.size).to eq(3)
+    end
+
+    it 'does not show details for a detected issue in a command' do
+      send_command('foo XYZ-987 bar')
+      expect(replies.size).to eq(0)
+    end
+
+    it 'does not show details for a issue in a URL-ish context' do
+      send_message('http://www.example.com/XYZ-987')
+      send_message('http://www.example.com/XYZ-987.html')
+      send_message('http://www.example.com/someother-XYZ-987.html')
+      send_message('TIL http://ruby-doc.org/core-2.3.0/Enumerable.html#method-i-each_slice')
+      expect(replies.size).to eq(0)
+    end
+
+    it 'shows details for a detected issue sent by a user absent from the list' do
+      send_message('foo XYZ-987 bar', as: @user1)
+      expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
+    end
+
+    it 'does not show details for a detected issue sent by a user whose name is on the list' do
+      send_message('foo XYZ-987 bar', as: @user2)
+      expect(replies.size).to eq(0)
+    end
+
+    it 'does not show details for a detected issue sent by a user whose ID is on the list' do
+      send_message('foo XYZ-987 bar', as: @user3)
+      expect(replies.size).to eq(0)
+    end
+
+    it 'does not show details for a detected issue sent by a user whose mention name is on the list' do
+      send_message('foo XYZ-987 bar', as: @user4)
+      expect(replies.size).to eq(0)
+    end
+
+    it 'performs a search for multiple issues when more than one issue is detected' do
+      prev_format = registry.config.handlers.jira.format
+      registry.config.handlers.jira.format = 'one-line'
+      send_message('XYZ-987 XYZ-988')
+      registry.config.handlers.jira.format = prev_format
+      expect(replies.size).to eq(3)
+      expect(replies).to eq([
+                              'Here are issues currently assigned to you:',
+                              'http://jira.local/browse/XYZ-987 - In Progress, A Person - Some summary text',
+                              'http://jira.local/browse/XYZ-988 - In Progress 2, A Person 2 - Some summary text 2'
+                            ])
+    end
+
+    it 'does not show details for multiple issues in URL-ish contexts' do
+      send_message('http://www.example.com/XYZ-987 http://www.example.com/XYZ-988')
+      send_message('http://www.example.com/XYZ-987.html http://www.example.com/XYZ-988.html')
+      expect(replies.size).to eq(0)
+    end
+
+    it 'does show details for a single issue when only one is not in a URL-ish context' do
+      send_message('http://www.example.com/XYZ-988 foo XYZ-987 bar http://www.example.com/XYZ-989', as: @user1)
+      expect(replies.size).to eq(1)
+      expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
+    end
+
+    it 'does not show details for multiple detected issues sent by a user whose name is on the list' do
+      send_message('XYZ-987 XYZ-988', as: @user2)
+      expect(replies.size).to eq(0)
+    end
+
+    context 'with rooms configured' do
+      def send_room_message(body, room)
+        robot.receive(Lita::Message.new(robot, body, Lita::Source.new(user: user, room: room)))
       end
 
-      it 'shows details for a detected issue in a message' do
-        send_message('XYZ-987')
-        send_message('foo XYZ-987 bar')
-        send_message('foo XYZ-987?')
-        expect(replies.size).to eq(3)
+      before do
+        @room1 = 'Room1'
+        @room2 = 'Room2'
+        registry.config.handlers.jira.rooms = [@room1]
       end
 
-      it 'does not show details for a detected issue in a command' do
-        send_command('foo XYZ-987 bar')
+      it 'shows details for a detected issue sent in a room on the list' do
+        send_room_message('foo XYZ-987 bar', @room1)
+        expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
+      end
+
+      it 'does not show details for a detected issue sent in a room absent from the list' do
+        send_room_message('foo XYZ-987 bar', @room2)
         expect(replies.size).to eq(0)
       end
 
-      it 'does not show details for a issue in a URL-ish context' do
-        send_message('http://www.example.com/XYZ-987')
-        send_message('http://www.example.com/XYZ-987.html')
-        send_message('http://www.example.com/someother-XYZ-987.html')
-        send_message('TIL http://ruby-doc.org/core-2.3.0/Enumerable.html#method-i-each_slice')
-        expect(replies.size).to eq(0)
-      end
-
-      context 'and an ignore list is defined' do
-        before(:each) do
-          @user1 = Lita::User.create('U1', name: 'User 1', mention_name: 'user1')
-          @user2 = Lita::User.create('U2', name: 'User 2', mention_name: 'user2')
-          @user3 = Lita::User.create('U3', name: 'User 3', mention_name: 'user3')
-          @user4 = Lita::User.create('U4', name: 'User 4', mention_name: 'user4')
-          registry.config.handlers.jira.ignore = ['User 2', 'U3', 'user4']
-        end
-
-        it 'shows details for a detected issue sent by a user absent from the list' do
-          send_message('foo XYZ-987 bar', as: @user1)
-          expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
-        end
-
-        it 'does not show details for a detected issue sent by a user whose name is on the list' do
-          send_message('foo XYZ-987 bar', as: @user2)
-          expect(replies.size).to eq(0)
-        end
-
-        it 'does not show details for a detected issue sent by a user whose ID is on the list' do
-          send_message('foo XYZ-987 bar', as: @user3)
-          expect(replies.size).to eq(0)
-        end
-
-        it 'does not show details for a detected issue sent by a user whose mention name is on the list' do
-          send_message('foo XYZ-987 bar', as: @user4)
-          expect(replies.size).to eq(0)
-        end
-      end
-
-      context 'and a room list is defined' do
-        def send_room_message(body, room)
-          robot.receive(Lita::Message.new(robot, body, Lita::Source.new(user: user, room: room)))
-        end
-
-        before(:each) do
-          @room1 = 'Room1'
-          @room2 = 'Room2'
-          registry.config.handlers.jira.rooms = [@room1]
-        end
-
-        it 'shows details for a detected issue sent in a room on the list' do
-          send_room_message('foo XYZ-987 bar', @room1)
-          expect(replies.last).to eq("[XYZ-987] Some summary text\nStatus: In Progress, assigned to: A Person, fixVersion: Sprint 2, priority: P0\nhttp://jira.local/browse/XYZ-987")
-        end
-
-        it 'does not show details for a detected issue sent in a room absent from the list' do
-          send_room_message('foo XYZ-987 bar', @room2)
-          expect(replies.size).to eq(0)
-        end
+      after do
+        registry.config.handlers.jira.rooms = []
       end
     end
   end

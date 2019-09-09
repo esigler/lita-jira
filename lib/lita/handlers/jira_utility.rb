@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # lita-jira plugin
 module Lita
   # Because we can.

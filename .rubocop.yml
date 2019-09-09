@@ -1,6 +1,17 @@
+# TODO: Enable
+# require: rubocop-rspec
+
 FileName:
   Exclude:
     - lib/lita-jira.rb
 
 LineLength:
   Max: 190
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+Style/FrozenStringLiteralComment:
+  Exclude:
+    - spec/lita/handlers/jira_spec.rb
