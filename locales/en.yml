@@ -19,7 +19,7 @@ en:
             syntax: jira whoami
             desc: Show your chat user / email association
           comment:
-            syntax: jira comment on <issue> <comment text>
+            syntax: jira comment on <issue> "<comment text>"
             desc: Adds <comment text> to <issue>
           point:
             syntax: jira point <issue> as <points>
